@@ -1,9 +1,3 @@
-/*
-Template: streamlab - Video Streaming WordPress Theme
-Author: Gentechtree
-Version: 1.0
-Design and Developed by: Gentechtree.com
-*/
 
 /*====================================
 [  Table of contents  ]
