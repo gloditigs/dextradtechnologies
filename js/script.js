@@ -141,16 +141,16 @@ document.getElementById('pms_register-form').addEventListener('submit', function
     
     // Define the payment links for each package
     const paymentLinks = {
-        '7330': 'https://payf.st/gdxob',  // Payment link for Premium package
-        '7329': 'https://payf.st/r5io8', // Payment link for Standard package
-        '7328': 'https://payf.st/ba8lq'     // Payment link for Basic package
+        '780': 'https://payf.st/gdxob',  // Payment link for Premium package
+        '420': 'https://payf.st/r5io8', // Payment link for Standard package
+        '74': 'https://payf.st/ba8lq'     // Payment link for Basic package
     };
 
     // Get the corresponding payment link
     const paymentLink = paymentLinks[selectedPackage.value];
 
     // Send the form data to Basin
-    fetch('https://usebasin.com/f/35927a0ab3b1', {
+    fetch('https://usebasin.com/f/6bf879e2d496', {
         method: 'POST',
         body: formData
     })
