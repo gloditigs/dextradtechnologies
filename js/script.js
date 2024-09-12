@@ -130,40 +130,58 @@
     });
 })(jQuery);
 
-document.getElementById('pms_register-form').addEventListener('submit', function (event) {
+
+
+document.getElementById("pms_register-form").addEventListener("submit", function(event) {
     event.preventDefault(); // Prevent the default form submission
 
-    // Get the form data
-    const formData = new FormData(this);
-    
-    // Get the selected package
-    const selectedPackage = document.querySelector('input[name="subscription_plans"]:checked');
-    
-    // Define the payment links for each package
+    const form = document.getElementById("pms_register-form");
+    const formData = new FormData(form);
+
+    // Get the selected subscription plan
+    const selectedPlan = document.querySelector('input[name="subscription_plans"]:checked').value;
+
+    // Define payment URLs based on the selected plan
     const paymentLinks = {
-        '780': 'https://payf.st/gdxob',  // Payment link for Premium package
-        '420': 'https://payf.st/r5io8', // Payment link for Standard package
-        '74': 'https://payf.st/ba8lq'     // Payment link for Basic package
+        "mfc-premium-780": "https://www.payment-link.com/mfc-premium-780",
+        "mfc-standard-420": "https://www.payment-link.com/mfc-standard-420",
+        "mfc-basic-74": "https://www.payment-link.com/mfc-basic-74",
+        "wp-premium-390": "https://www.payment-link.com/wp-premium-390",
+        "wp-standard-195": "https://www.payment-link.com/wp-standard-195",
+        "wp-basic-74": "https://www.payment-link.com/wp-basic-74",
+        "wp-devices-1-74": "https://www.payment-link.com/wp-devices-1-74",
+        "wp-devices-2-140": "https://www.payment-link.com/wp-devices-2-140",
+        "wp-devices-3-210": "https://www.payment-link.com/wp-devices-3-210",
+        "wp-devices-4-270": "https://www.payment-link.com/wp-devices-4-270",
+        "wp-user-1-770": "https://www.payment-link.com/wp-user-1-770",
+        "wp-user-2-1300": "https://www.payment-link.com/wp-user-2-1300",
+        "wp-user-4-2200": "https://www.payment-link.com/wp-user-4-2200"
     };
 
-    // Get the corresponding payment link
-    const paymentLink = paymentLinks[selectedPackage.value];
+    // Check if the selected plan has a valid payment link
+    const redirectUrl = paymentLinks[selectedPlan];
 
-    // Send the form data to Basin
-    fetch('https://usebasin.com/f/6bf879e2d496', {
-        method: 'POST',
+    if (!redirectUrl) {
+        alert("Invalid subscription plan selected.");
+        return;
+    }
+
+    // Send the form data via fetch to Basin
+    fetch("https://usebasin.com/f/6bf879e2d496", {
+        method: "POST",
         body: formData
     })
     .then(response => {
         if (response.ok) {
-            // If the form submission is successful, redirect to the payment link
-            window.location.href = paymentLink;
+            // Redirect to the specific payment link after successful form submission
+            window.location.href = redirectUrl;
         } else {
-            alert('There was an issue submitting the form. Please try again.');
+            alert("Something went wrong. Please try again.");
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert('There was an error submitting the form. Please try again.');
+        console.error("Error:", error);
+        alert("There was an error submitting the form. Please try again.");
     });
 });
+
