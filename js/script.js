@@ -143,19 +143,19 @@ document.getElementById("pms_register-form").addEventListener("submit", function
 
     // Define payment URLs based on the selected plan
     const paymentLinks = {
-        "mfc-premium-780": "https://www.payment-link.com/mfc-premium-780",
-        "mfc-standard-420": "https://www.payment-link.com/mfc-standard-420",
-        "mfc-basic-74": "https://www.payment-link.com/mfc-basic-74",
-        "wp-premium-390": "https://www.payment-link.com/wp-premium-390",
-        "wp-standard-195": "https://www.payment-link.com/wp-standard-195",
-        "wp-basic-74": "https://www.payment-link.com/wp-basic-74",
-        "wp-devices-1-74": "https://www.payment-link.com/wp-devices-1-74",
-        "wp-devices-2-140": "https://www.payment-link.com/wp-devices-2-140",
-        "wp-devices-3-210": "https://www.payment-link.com/wp-devices-3-210",
-        "wp-devices-4-270": "https://www.payment-link.com/wp-devices-4-270",
-        "wp-user-1-770": "https://www.payment-link.com/wp-user-1-770",
-        "wp-user-2-1300": "https://www.payment-link.com/wp-user-2-1300",
-        "wp-user-4-2200": "https://www.payment-link.com/wp-user-4-2200"
+        "mfc-premium-780": "https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=My+Family+Cinema&email_confirmation=1&confirmation_address=dextradtechnologies@gmail.com&item_description=+Premium++12+Months&amount=780&subscription_type=1&recurring_amount=780&cycles=0&frequency=6",
+        "mfc-standard-420": "https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=My+Family+Cinema+-++6+Months&email_confirmation=1&confirmation_address=dextradtechnologies@gmail.com&item_description=+Standard++6+Months&amount=420&subscription_type=1&recurring_amount=420&cycles=0&frequency=5",
+        "mfc-basic-74": "https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=My+Family+Cinema+-+Monthly&email_confirmation=1&confirmation_address=dextradtechnologies@gmail.com&item_description=Basic+Monthly&amount=75&subscription_type=1&recurring_amount=75&cycles=0&frequency=3",
+        "wp-premium-390": "https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-++6+Months&email_confirmation=1&confirmation_address=dextradtechnologies@gmail.com&item_description=6+Months&amount=390&subscription_type=1&recurring_amount=390&cycles=0&frequency=5",
+        "wp-standard-195": "https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-++3+Months&email_confirmation=1&confirmation_address=dextradtechnologies@gmail.com&item_description=3+Months&amount=195&subscription_type=1&recurring_amount=195&cycles=0&frequency=4",
+        "wp-basic-74": "https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-++Monthly&email_confirmation=1&confirmation_address=dextradtechnologies@gmail.com&item_description=Monthly&amount=74&subscription_type=1&recurring_amount=74&cycles=0&frequency=3",
+        "wp-devices-1-74": "https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-++1+Device+Monthly&email_confirmation=1&confirmation_address=dextradtechnologies@gmail.com&item_description=1+Device++Monthly&amount=74&subscription_type=1&recurring_amount=74&cycles=0&frequency=3",
+        "wp-devices-2-140": "https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-++2+Devices&email_confirmation=1&confirmation_address=dextradtechnologies@gmail.com&item_description=2+Devices+&amount=140&subscription_type=1&recurring_amount=140&cycles=0&frequency=3",
+        "wp-devices-3-210": "https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-++3+Devices&email_confirmation=1&confirmation_address=dextradtechnologies@gmail.com&item_description=3+Devices&amount=210&subscription_type=1&recurring_amount=210&cycles=0&frequency=3",
+        "wp-devices-4-270": "https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-++4+Devices&email_confirmation=1&confirmation_address=dextradtechnologies@gmail.com&item_description=4+Devices&amount=270&subscription_type=1&recurring_amount=270&cycles=0&frequency=3",
+        "wp-user-1-770": "https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-+1+User+Yearly&email_confirmation=1&confirmation_address=dextradtechnologies@gmail.com&item_description=1+User+&amount=770&subscription_type=1&recurring_amount=770&cycles=0&frequency=6",
+        "wp-user-2-1300": "https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-+2+Users+(Duo)&email_confirmation=1&confirmation_address=dextradtechnologies@gmail.com&item_description=2+Users+(Duo)&amount=1300&subscription_type=1&recurring_amount=1300&cycles=0&frequency=6",
+        "wp-user-4-2200": "https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-+4+Users+(Family+Package)&email_confirmation=1&confirmation_address=dextradtechnologies@gmail.com&item_description=4+Users+(Family+Package)&amount=2200&subscription_type=1&recurring_amount=2200&cycles=0&frequency=6"
     };
 
     // Check if the selected plan has a valid payment link
