@@ -37,7 +37,7 @@
                     <div class="text-center">
                         <form id="pms_register-form" class="pms-form" method="POST" action="https://usebasin.com/f/6bf879e2d496">
                             <h4>Register</h4>
-                            <p>We are authorized resellers of Watchlist-Pro and My Family Cinema. Instead of subscribing through the official platform, where support is often limited, you can do it here directly for personalized assistance.</p>
+                            <p>Need 2,3 or 4 devices on Watchlist-Pro but can't afford the yearly fees? <br>We Got You Covered, connect multiply device at a monthly fee!</p>
                         
                             <ul class="pms-form-fields-wrapper pl-0">
                                 <li class="pms-field pms-user-login-field">
@@ -57,37 +57,22 @@
                                     <input id="last_name" name="last_name" type="text" value="" required>
                                 </li>
                                 <li class="pms-field pms-uid-field">
-                                    <label for="uid">UID/ID Number</label>
+                                    <label for="uid">UID/ID Number(For each device)</label>
+                                    <input id="uid" name="uid" type="number" value="" required>
+                                    <input id="uid" name="uid" type="number" value="" required>
+                                    <input id="uid" name="uid" type="number" value="" >
                                     <input id="uid" name="uid" type="number" value="" required>
                                 </li>
                                 <li class="pms-field pms-account-field">
-                                    <label for="account">Account</label>
+                                    <label for="account">Account(for each devices)</label>
+                                    <input id="account" name="account" type="number" value="" required>
+                                    <input id="account" name="account" type="number" value="" required>
+                                    <input id="account" name="account" type="number" value="">
                                     <input id="account" name="account" type="number" value="" required>
                                 </li>
                         
                                 <!-- My Family Cinema Plans -->
-                                <li class="pms-field pms-field-subscriptions">
-                                    <h4>My Family Cinema</h4>
-                                    <p>My Family Cinema is a multimedia platform, offering access to over 1 million movies and TV shows with a user-friendly interface.</p>
-                        
-                                    <div class="pms-subscription-plan">
-                                        <label><input type="radio" name="subscription_plans" value="mfc-premium-780" checked="checked">
-                                        <span class="pms-subscription-plan-name">Premium</span>
-                                        <span class="pms-subscription-plan-price">R780 / 12 Months</span></label>
-                                    </div>
-                        
-                                    <div class="pms-subscription-plan">
-                                        <label><input type="radio" name="subscription_plans" value="mfc-standard-420">
-                                        <span class="pms-subscription-plan-name">Standard</span>
-                                        <span class="pms-subscription-plan-price">R420 / 6 Months</span></label>
-                                    </div>
-                        
-                                    <div class="pms-subscription-plan">
-                                        <label><input type="radio" name="subscription_plans" value="mfc-basic-74">
-                                        <span class="pms-subscription-plan-name">Basic</span>
-                                        <span class="pms-subscription-plan-price">R74 / Monthly</span></label>
-                                    </div>
-                                </li>
+                               
                         
                                 <!-- Watchlist-Pro Plans -->
                                 <li class="pms-field pms-field-subscriptions">
@@ -95,73 +80,28 @@
                                     <p>WatchList Pro is a personal media player whose sole purpose is to provide cinematic information.</p>
                         
                                     <div class="pms-subscription-plan">
-                                        <label><input type="radio" name="subscription_plans" value="wp-premium-390" checked="checked">
-                                        <span class="pms-subscription-plan-name">Premium</span>
-                                        <span class="pms-subscription-plan-price">R390 / 6 Months</span></label>
-                                    </div>
-                        
-                                    <div class="pms-subscription-plan">
-                                        <label><input type="radio" name="subscription_plans" value="wp-standard-195">
-                                        <span class="pms-subscription-plan-name">Standard</span>
-                                        <span class="pms-subscription-plan-price">R195 / 3 Months</span></label>
-                                    </div>
-                        
-                                    <div class="pms-subscription-plan">
-                                        <label><input type="radio" name="subscription_plans" value="wp-basic-74">
-                                        <span class="pms-subscription-plan-name">Basic</span>
-                                        <span class="pms-subscription-plan-price">R74 / Monthly</span></label>
-                                    </div>
-                                </li>
-                        
-                                <!-- Watchlist-Pro Devices Plans -->
-                                <li class="pms-field pms-field-subscriptions">
-                                    <p style="color: red; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: larger;">Watchlist-Pro (Devices)</p>
-                        
-                                    <div class="pms-subscription-plan">
-                                        <label><input type="radio" name="subscription_plans" value="wp-devices-1-74" checked="checked">
-                                        <span class="pms-subscription-plan-name">1 Device</span>
-                                        <span class="pms-subscription-plan-price">R74 / Month</span></label>
-                                    </div>
-                        
-                                    <div class="pms-subscription-plan">
-                                        <label><input type="radio" name="subscription_plans" value="wp-devices-2-140">
-                                        <span class="pms-subscription-plan-name">2 Devices</span>
+                                        <label><input type="radio" name="subscription_plans" value="wp-2user-140" checked="checked">
+                                        <span class="pms-subscription-plan-name">2 Users</span>
                                         <span class="pms-subscription-plan-price">R140 / Month</span></label>
                                     </div>
                         
                                     <div class="pms-subscription-plan">
-                                        <label><input type="radio" name="subscription_plans" value="wp-devices-3-210">
-                                        <span class="pms-subscription-plan-name">3 Devices</span>
+                                        <label><input type="radio" name="subscription_plans" value="wp-3user-210">
+                                        <span class="pms-subscription-plan-name">3 Users</span>
                                         <span class="pms-subscription-plan-price">R210 / Month</span></label>
                                     </div>
                         
                                     <div class="pms-subscription-plan">
-                                        <label><input type="radio" name="subscription_plans" value="wp-devices-4-270">
-                                        <span class="pms-subscription-plan-name">4 Devices</span>
+                                        <label><input type="radio" name="subscription_plans" value="wp-4user-270">
+                                        <span class="pms-subscription-plan-name">4 Users</span>
                                         <span class="pms-subscription-plan-price">R270 / Month</span></label>
                                     </div>
                                 </li>
                         
-                                <!-- Watchlist-Pro User Packages -->
-                                <li class="pms-field pms-field-subscriptions">
-                                    <div class="pms-subscription-plan">
-                                        <label><input type="radio" name="subscription_plans" value="wp-user-1-770" checked="checked">
-                                        <span class="pms-subscription-plan-name">1 User</span>
-                                        <span class="pms-subscription-plan-price">R770 / Year</span></label>
-                                    </div>
+                                <!-- Watchlist-Pro Devices Plans -->
+                              
                         
-                                    <div class="pms-subscription-plan">
-                                        <label><input type="radio" name="subscription_plans" value="wp-user-2-1300">
-                                        <span class="pms-subscription-plan-name">2 Users (Duo)</span>
-                                        <span class="pms-subscription-plan-price">R1300 / Year</span></label>
-                                    </div>
-                        
-                                    <div class="pms-subscription-plan">
-                                        <label><input type="radio" name="subscription_plans" value="wp-user-4-2200">
-                                        <span class="pms-subscription-plan-name">4 Users (Family Package)</span>
-                                        <span class="pms-subscription-plan-price">R2200 / Year</span></label>
-                                    </div>
-                                </li>
+                               
                             </ul>
                         
                             <span id="pms-submit-button-loading-placeholder-text" class="d-none">Processing. Please wait...</span>
