@@ -4,13 +4,13 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
 const bcrypt = require('bcryptjs');
 const customersRouter = require('./routes/customers');
 const payfastRouter = require('./routes/payfast');
 const cron = require('node-cron');
 const Customer = require('./models/customer');
 const nodemailer = require('nodemailer');
+const path = require('path'); // Importing path for setting views directory
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,6 +18,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views')); // Setting the views directory
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
@@ -28,19 +29,24 @@ app.use(
         secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
-        store: MongoStore.create({
-            mongoUrl: process.env.MONGO_URI,
-            collectionName: 'sessions',
-            ttl: 14 * 24 * 60 * 60 // = 14 days
-        }),
-        cookie: { secure: false, httpOnly: true } // Set secure to true in production with HTTPS
+        cookie: { secure: false, httpOnly: true }
     })
 );
 
 // MongoDB connection
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('Error connecting to MongoDB:', err));
+
+// Example code to hash a password (useful for setting admin password)
+const password = 'willie78'; // Replace with your desired password
+bcrypt.hash(password, 10, (err, hash) => {
+    if (err) {
+        console.error('Error hashing password:', err);
+    } else {
+        console.log('Hashed password:', hash);
+    }
+});
 
 // Middleware to check authentication
 function isAuthenticated(req, res, next) {
