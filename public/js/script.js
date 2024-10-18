@@ -1,0 +1,181 @@
+
+/*====================================
+[  Table of contents  ]
+======================================
+==> Page Loader
+==> Search Button
+==> Sidebar Toggle
+==> Sticky Header
+==> Back To Top
+======================================
+[ End table content ]
+======================================
+*/
+(function(jQuery) {
+    "use strict";
+    jQuery(window).on('load', function(e) {
+
+        jQuery('p:empty').remove();
+
+        /*------------------------
+                Page Loader
+        --------------------------*/
+        jQuery("#gen-loading").fadeOut();
+        jQuery("#gen-loading").delay(0).fadeOut("slow");
+        /*------------------------
+                Search Button
+        --------------------------*/
+        jQuery('#gen-seacrh-btn').on('click', function() {
+            jQuery('.gen-search-form').slideToggle();
+            jQuery('.gen-search-form').toggleClass('gen-form-show');
+            if (jQuery('.gen-search-form').hasClass("gen-form-show")) {
+                jQuery(this).html('<i class="fa fa-times"></i>');
+            } else {
+                jQuery(this).html('<i class="fa fa-search"></i>');
+            }
+        });
+
+        jQuery('.gen-account-menu').hide();
+         jQuery('#gen-user-btn').on('click', function(e) {
+            
+            jQuery('.gen-account-menu').slideToggle();
+
+             e.stopPropagation();
+            // jQuery('.gen-account-menu').toggleClass('gen-form-show');
+            // if (jQuery('.gen-account-menu').hasClass("gen-form-show")) {
+            //     jQuery(this).html('<i class="fa fa-times"></i>');
+            // } else {
+            //     jQuery(this).html('<i class="fa fa-user"></i>');
+            // }
+        });
+
+        jQuery('body').on('click' , function(){
+            if(jQuery('.gen-account-menu').is(":visible"))
+            {
+                jQuery('.gen-account-menu').slideUp();
+            }
+        });
+        /*------------------------
+                Sidebar Toggle
+        --------------------------*/
+        jQuery("#gen-toggle-btn").on('click', function() {
+            jQuery('#gen-sidebar-menu-contain').toggleClass("active");
+        });
+        jQuery('.gen-toggle-btn').click(function() {
+            jQuery('body').addClass('gen-siderbar-open');
+        });
+        jQuery('.gen-close').click(function() {
+            jQuery('body').removeClass('gen-siderbar-open');
+        });
+        /*------------------------
+                Sticky Header
+        --------------------------*/
+        var view_width = jQuery(window).width();
+        if (!jQuery('header').hasClass('gen-header-default') && view_width >= 1023)
+        {
+            var height = jQuery('header').height();
+            jQuery('.gen-breadcrumb').css('padding-top', height * 1.3);
+        }
+        if (jQuery('header').hasClass('gen-header-default'))
+        {
+            jQuery(window).scroll(function() {
+                var scrollTop = jQuery(window).scrollTop();
+                if (scrollTop > 300) {
+                    jQuery('.gen-bottom-header').addClass('gen-header-sticky animated fadeInDown animate__faster');
+                } else {
+                    jQuery('.gen-bottom-header').removeClass('gen-header-sticky animated fadeInDown animate__faster');
+                }
+            });
+        }
+        if (jQuery('header').hasClass('gen-has-sticky')) {
+            jQuery(window).scroll(function() {
+                var scrollTop = jQuery(window).scrollTop();
+                if (scrollTop > 300) {
+                    jQuery('header').addClass('gen-header-sticky animated fadeInDown animate__faster');
+                } else {
+                    jQuery('header').removeClass('gen-header-sticky animated fadeInDown animate__faster');
+                }
+            });
+        }
+        /*------------------------
+                Back To Top
+        --------------------------*/
+        jQuery('#back-to-top').fadeOut();
+        jQuery(window).on("scroll", function() {
+            if (jQuery(this).scrollTop() > 250) {
+                jQuery('#back-to-top').fadeIn(1400);
+            } else {
+                jQuery('#back-to-top').fadeOut(400);
+            }
+        });
+        jQuery('#top').on('click', function() {
+            jQuery('top').tooltip('hide');
+            jQuery('body,html').animate({
+                scrollTop: 0
+            }, 800);
+            return false;
+        });
+
+        if(jQuery('.tv-show-back-data').length)
+        {
+            var url = jQuery('.tv-show-back-data').data('url');
+            console.log(url);
+            var html = '';
+            html += `<div class="tv-single-background">
+                <img src="`+url+`">
+            </div>`;
+            jQuery('#main').prepend(html);
+           
+        }
+    });
+})(jQuery);
+
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("pms_register-form");
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault(); // Prevent the default form submission
+
+        // Collect form data
+        const formData = {
+            fullName: document.getElementById('first_name').value + ' ' + document.getElementById('last_name').value,
+            email: document.getElementById('email').value,
+            whatsappNumber: document.getElementById('whatsapp').value,
+            uids: [
+                document.getElementById('uid').value,
+                document.getElementById('uid2').value,
+                document.getElementById('uid3').value,
+                document.getElementById('uid4').value
+            ].filter(Boolean), // Collect UIDs and filter out any empty values
+            accounts: [
+                document.getElementById('account').value,
+                document.getElementById('account2').value,
+                document.getElementById('account3').value,
+                document.getElementById('account4').value
+            ].filter(Boolean), // Collect account values and filter out any empty values
+            package: document.querySelector('input[name="subscription_plans"]:checked').value
+        };
+
+        try {
+            // Make a POST request to the backend
+            const response = await fetch('http://localhost:5000/customers/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                // Redirect to the PayFast payment link
+                window.location.href = data.payfastLink;
+            } else {
+                alert('Error: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            alert('An error occurred while submitting the form. Please try again.');
+        }
+    });
+});
