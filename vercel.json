@@ -1,26 +1,10 @@
 {
     "version": 2,
-    "builds": [
-      { "src": "server.js", "use": "@vercel/node" },
-      { "src": "api/**/*.js", "use": "@vercel/node" }
-    ],
     "routes": [
-      {
-        "src": "/api/(.*)",
-        "dest": "/api/$1"
-      },
-      {
-        "src": "/customers",
-        "dest": "/api/customers"
-      },
-      {
-        "src": "/login",
-        "dest": "/api/login"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/$1"
-      }
+      { "src": "/api/(.*)", "dest": "/api/$1" },
+      { "src": "/customers", "dest": "/api/customers" },
+      { "src": "/login", "dest": "/api/login" },
+      { "src": "/", "dest": "/server.js" }
     ],
     "env": {
       "MONGO_URI": "mongodb+srv://mbalawebservices:Gloditigs781227%2A@dextradtechnologies.7p7fm.mongodb.net/?retryWrites=true&w=majority&appName=DextradTechnologies",
