@@ -1,10 +1,10 @@
 {
     "version": 2,
     "routes": [
+      { "src": "/", "dest": "/index.html" },
       { "src": "/api/(.*)", "dest": "/api/$1" },
       { "src": "/customers", "dest": "/api/customers" },
-      { "src": "/login", "dest": "/api/login" },
-      { "src": "/", "dest": "/server.js" }
+      { "src": "/login", "dest": "/api/login" }
     ],
     "env": {
       "MONGO_URI": "mongodb+srv://mbalawebservices:Gloditigs781227%2A@dextradtechnologies.7p7fm.mongodb.net/?retryWrites=true&w=majority&appName=DextradTechnologies",
