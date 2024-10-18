@@ -36,9 +36,8 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('Error connecting to MongoDB:', err));
 
-
-    const password = 'willie78'; // Replace with your desired password
-
+// Example code to hash a password (useful for setting admin password)
+const password = 'willie78'; // Replace with your desired password
 bcrypt.hash(password, 10, (err, hash) => {
     if (err) {
         console.error('Error hashing password:', err);
@@ -93,7 +92,7 @@ app.post('/logout', (req, res) => {
 // Email sending function
 async function sendEmail(to, subject, text) {
     const transporter = nodemailer.createTransport({
-        host: 'gmail',
+        service: 'gmail',
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
@@ -136,6 +135,7 @@ cron.schedule('0 9 * * *', async () => {
     }
 });
 
+// Start server
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
