@@ -11,8 +11,8 @@
     }
   ],
   "routes": [
-    { "src": "/customers", "dest": "/server.js" },
-    { "src": "/login", "dest": "/server.js" },
+    { "src": "/customers", "dest": "/api/customers" },
+    { "src": "/login", "dest": "/api/login" },
     { "src": "/(.*)", "dest": "/public/$1" },
     { "src": "/", "dest": "/public/index.html" }
   ],
