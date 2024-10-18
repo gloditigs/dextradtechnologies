@@ -10,6 +10,7 @@ const payfastRouter = require('./routes/payfast');
 const cron = require('node-cron');
 const Customer = require('./models/customer');
 const nodemailer = require('nodemailer');
+const path = require('path'); // Importing path for setting views directory
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -17,6 +18,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views')); // Setting the views directory
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
