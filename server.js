@@ -34,7 +34,7 @@ app.use(
 );
 
 // MongoDB connection
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('Error connecting to MongoDB:', err));
 
@@ -56,7 +56,10 @@ function isAuthenticated(req, res, next) {
     res.redirect('/login');
 }
 
-// Routes
+// Allow /customers/add route without authentication
+app.post('/customers/add', customersRouter);
+
+// Routes that require authentication
 app.use('/customers', isAuthenticated, customersRouter);
 app.use('/api/payfast', payfastRouter);
 
