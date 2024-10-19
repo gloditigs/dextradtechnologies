@@ -165,17 +165,25 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 body: JSON.stringify(formData)
             });
+            
 
-            const data = await response.json();
-            if (response.ok) {
-                // Redirect to the PayFast payment link
-                window.location.href = data.payfastLink;
-            } else {
-                alert('Error: ' + data.message);
-            }
-        } catch (error) {
-            console.error('Error submitting form:', error);
-            alert('An error occurred while submitting the form. Please try again.');
-        }
-    });
-});
+              // Check if the response is JSON
+              const contentType = response.headers.get('content-type');
+              if (contentType && contentType.indexOf('application/json') !== -1) {
+                  const data = await response.json();
+                  if (response.ok) {
+                      // Redirect to the PayFast payment link
+                      window.location.href = data.payfastLink;
+                  } else {
+                      alert('Error: ' + data.message);
+                  }
+              } else {
+                  // Handle non-JSON response
+                  const text = await response.text();
+                  console.error('Error submitting form:', text);
+                  alert('Error: Unexpected response from server.');
+              }
+          } catch (error) {
+              console.error('Error submitting form:', error);
+              alert('Error submitting form: ' + error.message);
+          }
