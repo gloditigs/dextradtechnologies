@@ -55,23 +55,7 @@ router.post('/', async (req, res) => {
         // Save the customer to the database
         await newCustomer.save();
 
-        // Determine the PayFast link based on the package
-        const payfastLink = determinePayFastLink(package);
-
-        // Check if a valid PayFast link was generated
-        if (payfastLink) {
-            return res.status(201).json({ message: 'Customer added successfully', payfastLink });
-        } else {
-            console.error('No valid payment link found for the selected package.');
-            return res.status(400).json({ message: 'No valid payment link found for the selected package.' });
-        }
-    } catch (err) {
-        console.error('Error saving customer:', err);
-        return res.status(500).json({ message: 'Error saving customer', error: err.message });
-    }
-});
-
-// Helper function to determine PayFast link
+      // Helper function to determine PayFast link
 function determinePayFastLink(package) {
     switch (package) {
         case 'mfc-premium-780':
@@ -90,5 +74,20 @@ function determinePayFastLink(package) {
             return ''; // Return an empty string if no matching package
     }
 }
+
+        // Check if a valid PayFast link was generated
+        if (payfastLink) {
+            return res.status(201).json({ message: 'Customer added successfully', payfastLink });
+        } else {
+            console.error('No valid payment link found for the selected package.');
+            return res.status(400).json({ message: 'No valid payment link found for the selected package.' });
+        }
+    } catch (err) {
+        console.error('Error saving customer:', err);
+        return res.status(500).json({ message: 'Error saving customer', error: err.message });
+    }
+});
+
+
 
 module.exports = router;
