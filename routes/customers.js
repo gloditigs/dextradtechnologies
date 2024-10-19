@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Customer = require('../models/customer');
+const crypto = require('crypto');
 
 // Route to add a new customer
 router.post('/add', async (req, res) => {
@@ -21,13 +22,13 @@ router.post('/add', async (req, res) => {
                 expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
                 break;
             case 'mfc-2-accounts':
+                expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
+                break;
             case 'mfc-3-accounts':
+                expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
+                break;
             case 'mfc-4-accounts':
-            case 'wp-devices-1-74':
-            case 'wp-devices-2-140':
-            case 'wp-devices-3-210':
-            case 'wp-devices-4-270':
-                expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration for these packages
+                expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
                 break;
             case 'wp-premium-390':
                 expiryDate.setMonth(expiryDate.getMonth() + 6); // 6 months duration
@@ -38,8 +39,24 @@ router.post('/add', async (req, res) => {
             case 'wp-basic-74':
                 expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
                 break;
+            case 'wp-devices-1-74':
+                expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
+                break;
+            case 'wp-devices-2-140':
+                expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
+                break;
+            case 'wp-devices-3-210':
+                expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
+                break;
+            case 'wp-devices-4-270':
+                expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
+                break;
             case 'wp-user-1-770':
+                expiryDate.setFullYear(expiryDate.getFullYear() + 1); // 12 months duration
+                break;
             case 'wp-user-2-1300':
+                expiryDate.setFullYear(expiryDate.getFullYear() + 1); // 12 months duration
+                break;
             case 'wp-user-4-2200':
                 expiryDate.setFullYear(expiryDate.getFullYear() + 1); // 12 months duration
                 break;
@@ -64,34 +81,83 @@ router.post('/add', async (req, res) => {
         await newCustomer.save();
 
         // Determine the PayFast link based on the package
-        const payfastLink = determinePayFastLink(package);
+        let payfastLink = '';
+        switch (package) {
+            case 'mfc-premium-780':
+                payfastLink = 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=My+Family+Cinema&email_confirmation=1&confirmation_address=sales@dextradtechnologies.co.za&item_description=+Premium++12+Months&amount=780&subscription_type=1&recurring_amount=780&cycles=0&frequency=6';
+                break;
+            case 'mfc-standard-420':
+                payfastLink = 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=My+Family+Cinema+-++6+Months&email_confirmation=1&confirmation_address=sales@dextradtechnologies.co.za&item_description=+Standard++6+Months&amount=420&subscription_type=1&recurring_amount=420&cycles=0&frequency=5';
+                break;
+            case 'mfc-basic-74':
+                payfastLink = 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=My+Family+Cinema+-+Monthly&email_confirmation=1&confirmation_address=sales@dextradtechnologies.co.za&item_description=Basic+Monthly&amount=75&subscription_type=1&recurring_amount=75&cycles=0&frequency=3';
+                break;
+            case 'wp-premium-390':
+                payfastLink = 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-++6+Months&email_confirmation=1&confirmation_address=sales@dextradtechnologies.co.za&item_description=6+Months&amount=390&subscription_type=1&recurring_amount=390&cycles=0&frequency=5';
+                break;
+            case 'wp-standard-195':
+                payfastLink = 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-++3+Months&email_confirmation=1&confirmation_address=sales@dextradtechnologies.co.za&item_description=3+Months&amount=195&subscription_type=1&recurring_amount=195&cycles=0&frequency=4';
+                break;
+            case 'wp-basic-74':
+                payfastLink = 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-++Monthly&email_confirmation=1&confirmation_address=sales@dextradtechnologies.co.za&item_description=Monthly&amount=74&subscription_type=1&recurring_amount=74&cycles=0&frequency=3';
+                break;
+            case 'wp-devices-1-74':
+                payfastLink = 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-++1+Device+Monthly&email_confirmation=1&confirmation_address=sales@dextradtechnologies.co.za&item_description=1+Device++Monthly&amount=74&subscription_type=1&recurring_amount=74&cycles=0&frequency=3';
+                break;
+            case 'wp-devices-2-140':
+                payfastLink = 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-++2+Devices&email_confirmation=1&confirmation_address=sales@dextradtechnologies.co.za&item_description=2+Devices+&amount=140&subscription_type=1&recurring_amount=140&cycles=0&frequency=3';
+                break;
+            case 'wp-devices-3-210':
+                payfastLink = 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-++3+Devices&email_confirmation=1&confirmation_address=sales@dextradtechnologies.co.za&item_description=3+Devices&amount=210&subscription_type=1&recurring_amount=210&cycles=0&frequency=3';
+                break;
+            case 'wp-devices-4-270':
+                payfastLink = 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-++4+Devices&email_confirmation=1&confirmation_address=sales@dextradtechnologies.co.za&item_description=4+Devices&amount=270&subscription_type=1&recurring_amount=270&cycles=0&frequency=3';
+                break;
+            case 'wp-user-1-770':
+                payfastLink = 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-+1+User+Yearly&email_confirmation=1&confirmation_address=sales@dextradtechnologies.co.za&item_description=1+User+&amount=770&subscription_type=1&recurring_amount=770&cycles=0&frequency=6';
+                break;
+            case 'wp-user-2-1300':
+                payfastLink = 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-+2+Users+(Duo)&email_confirmation=1&confirmation_address=sales@dextradtechnologies.co.za&item_description=2+Users+(Duo)&amount=1300&subscription_type=1&recurring_amount=1300&cycles=0&frequency=6';
+                break;
+            case 'wp-2user-140':
+                payfastLink = 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-++2+Users+R140++Month&email_confirmation=1&confirmation_address=sales@dextradtechnologies.co.za&item_description=+2+Users+R140++Month&amount=140&subscription_type=1&recurring_amount=140&cycles=0&frequency=3';
+                break;
+            case 'wp-3user-210':
+                payfastLink = 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-++3+Users+R210++Month&email_confirmation=1&confirmation_address=sales@dextradtechnologies.co.za&item_description=3+Users+R210++Month&amount=210&subscription_type=1&recurring_amount=210&cycles=0&frequency=3';
+                break;
+            case 'wp-4user-270':
+                payfastLink = 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-++4+Users+R270+Month&email_confirmation=1&confirmation_address=sales@dextradtechnologies.co.za&item_description=4+Users+R270++Month&amount=270&subscription_type=1&recurring_amount=270&cycles=0&frequency=3';
+                break;
+            case 'wp-user-4-2200':
+                payfastLink = 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro+-+4+Users+(Family+Package)&email_confirmation=1&confirmation_address=sales@dextradtechnologies.co.za&item_description=4+Users+(Family+Package)&amount=2200&subscription_type=1&recurring_amount=2200&cycles=0&frequency=6';
+                break;
+            case 'mfc-2-accounts':
+                payfastLink = 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=2+Accounts+-+My+Family+Cinema&email_confirmation=1&confirmation_address=sales@dextradtechnologies.co.za&item_description=2+Accounts&amount=148&subscription_type=1&recurring_amount=148&cycles=0&frequency=3';
+                break;
+            case 'mfc-3-accounts':
+                payfastLink = 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=3+Accounts+-+My+Family+Cinema&email_confirmation=1&confirmation_address=sales@dextradtechnologies.co.za&item_description=3+Accounts&amount=222&subscription_type=1&recurring_amount=222&cycles=0&frequency=3';
+                break;
+            case 'mfc-4-accounts':
+                payfastLink = 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=4+Accounts+-+My+Family+Cinema&email_confirmation=1&confirmation_address=sales@dextradtechnologies.co.za&item_description=4+Accounts&amount=296&subscription_type=1&recurring_amount=296&cycles=0&frequency=3';
+                break;
+                default:
+                    throw new Error('Invalid package selected');
+        }
 
-        // Redirect the user to the PayFast link if a link is provided
-        if (payfastLink) {
-            return res.status(200).json({ message: 'Customer added successfully', payfastLink });
+        // Redirect the user to the PayFast link
+        res.redirect(payfastLink);
+
+        // Respond with the PayFast link to redirect the user
+         if (source !== 'manual') {
+            res.status(201).json({ message: 'Customer added successfully', payfastLink });
         } else {
-            return res.status(400).json({ message: 'No valid payment link found for the selected package.' });
+            res.status(201).json({ message: 'Customer added manually' });
         }
     } catch (err) {
         console.error('Error saving customer:', err);
-        return res.status(500).json({ message: 'Error saving customer' });
+        res.status(500).json({ message: 'Error saving customer' });
     }
 });
-
-// Helper function to determine PayFast link
-function determinePayFastLink(package) {
-    switch (package) {
-        case 'mfc-premium-780':
-            return 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=My+Family+Cinema+Premium&amount=780';
-        case 'mfc-standard-420':
-            return 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=My+Family+Cinema+Standard&amount=420';
-        case 'wp-basic-74':
-            return 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist+Pro+Basic&amount=74';
-        // Add other cases for packages...
-        default:
-            return ''; // Return an empty string if no matching package
-    }
-}
 
 // ITN endpoint for PayFast
 router.post('/payfast/itn', async (req, res) => {
