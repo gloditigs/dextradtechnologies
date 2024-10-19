@@ -11,12 +11,11 @@
     }
   ],
   "routes": [
-    { "src": "/customers", "dest": "server.js" },
-    { "src": "/customers/delete/([^/]+)", "dest": "/server.js" },
-    { "src": "/customers/add/([^/]+)", "dest": "/server.js" },
-    { "src": "/login", "dest": "server.js" },
-    { "src": "/(.*)", "dest": "/public/$1" },
-    { "src": "/", "dest": "/public/index.html" }
+    { "src": "/api/(.*)", "dest": "/server.js" },
+    { "src": "/customers", "dest": "/server.js" },
+    { "src": "/customers/(.*)", "dest": "/server.js" },
+    { "src": "/login", "dest": "/server.js" },
+    { "src": "/(.*)", "dest": "/public/$1" }
   ],
   "env": {
     "MONGO_URI": "mongodb+srv://mbalawebservices:Gloditigs781227%2A@dextradtechnologies.7p7fm.mongodb.net/?retryWrites=true&w=majority&appName=DextradTechnologies",
