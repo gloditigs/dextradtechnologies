@@ -23,29 +23,7 @@ app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Middleware to handle form submission
-app.post('/pms_register-form', async (req, res) => {
-    try {
-        const response = await fetch('https://www.dextradtechnologies.co.za/customers/add', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(req.body)
-        });
 
-        if (response.ok) {
-            const data = await response.json();
-            // Assuming the response contains a payment link
-            res.redirect(data.paymentLink);
-        } else {
-            res.status(response.status).send('Error submitting form');
-        }
-    } catch (error) {
-        console.error('Error submitting form:', error);
-        res.status(500).send('Internal Server Error');
-    }
-});
 
 // Session middleware
 app.use(

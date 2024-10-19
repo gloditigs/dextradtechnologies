@@ -3,6 +3,38 @@ const router = express.Router();
 const Customer = require('../models/customer');
 const crypto = require('crypto');
 
+document.getElementById('pms_register-form').addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+        const response = await fetch('https://www.dextradtechnologies.co.za/customers/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            if (result.payfastLink) {
+                window.location.href = result.payfastLink;
+            } else {
+                alert('Customer added manually');
+            }
+        } else {
+            alert(result.message || 'Error adding customer');
+        }
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        alert('Error submitting form');
+    }
+});
+
 // Route to add a new customer
 router.post('/add', async (req, res) => {
     try {
