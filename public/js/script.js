@@ -166,19 +166,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify(formData)
             });
 
-            // Check if the response is successful
             if (response.ok) {
                 const data = await response.json();
+                // Check if PayFast link is available and redirect
                 if (data.payfastLink) {
-                    // Redirect to the PayFast payment link
                     window.location.href = data.payfastLink;
                 } else {
-                    alert('Error: No valid payment link found for the selected package.');
+                    alert('No valid payment link found. Please contact support.');
                 }
             } else {
                 const errorData = await response.json();
-                console.error('Error:', errorData.message);
-                alert('Error: ' + errorData.message);
+                alert('Error: ' + (errorData.message || 'An unexpected error occurred.'));
             }
         } catch (error) {
             console.error('Error submitting form:', error);

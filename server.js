@@ -6,11 +6,12 @@ const cors = require('cors');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const customersRouter = require('./routes/customers');
+const addCustomerRouter = require('./routes/addCustomer'); // Importing the addCustomer router correctly
 const payfastRouter = require('./routes/payfast');
 const cron = require('node-cron');
 const Customer = require('./models/customer');
 const nodemailer = require('nodemailer');
-const path = require('path'); // Importing path for setting views directory
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,22 +19,10 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views')); // Setting the views directory
+app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
-
-
-
-// Session middleware
-app.use(
-    session({
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: false,
-        cookie: { secure: false, httpOnly: true }
-    })
-);
 
 // Session middleware with 5-minute timeout
 app.use(
@@ -59,16 +48,6 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('Error connecting to MongoDB:', err));
 
-// Example code to hash a password (useful for setting admin password)
-const password = 'willie78'; // Replace with your desired password
-bcrypt.hash(password, 10, (err, hash) => {
-    if (err) {
-        console.error('Error hashing password:', err);
-    } else {
-        console.log('Hashed password:', hash);
-    }
-});
-
 // Middleware to check authentication
 function isAuthenticated(req, res, next) {
     if (req.session.isAuthenticated) {
@@ -78,7 +57,7 @@ function isAuthenticated(req, res, next) {
 }
 
 // Allow /customers/add route without authentication
-app.post('/customers/add', customersRouter);
+app.use('/customers/add', addCustomerRouter); // Use the correct router for the add customer route
 
 // Routes that require authentication
 app.use('/customers', isAuthenticated, customersRouter);
@@ -165,4 +144,3 @@ cron.schedule('0 9 * * *', async () => {
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
-
