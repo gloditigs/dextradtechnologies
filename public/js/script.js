@@ -130,7 +130,6 @@
     });
 })(jQuery);
 
-
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("pms_register-form");
 
@@ -168,24 +167,18 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             // Check if the response is JSON
-            const contentType = response.headers.get('content-type');
-            if (contentType && contentType.indexOf('application/json') !== -1) {
+            if (response.ok) {
                 const data = await response.json();
-                if (response.ok) {
-                    if (data.payfastLink) {
-                        // Redirect to the PayFast payment link
-                        window.location.href = data.payfastLink;
-                    } else {
-                        alert('Error: Payment link not found.');
-                    }
+                if (data.payfastLink) {
+                    // Redirect to the PayFast payment link
+                    window.location.href = data.payfastLink;
                 } else {
-                    alert('Error: ' + data.message);
+                    alert('Error: No valid payment link found for the selected package.');
                 }
             } else {
-                // Handle non-JSON response
-                const text = await response.text();
-                console.error('Error submitting form:', text);
-                alert('Error: Unexpected response from server.');
+                const errorData = await response.json();
+                console.error('Error:', errorData.message);
+                alert('Error: ' + errorData.message);
             }
         } catch (error) {
             console.error('Error submitting form:', error);
