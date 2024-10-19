@@ -21,13 +21,13 @@ router.post('/add', async (req, res) => {
                 expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
                 break;
             case 'mfc-2-accounts':
-                expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
-                break;
             case 'mfc-3-accounts':
-                expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
-                break;
             case 'mfc-4-accounts':
-                expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
+            case 'wp-devices-1-74':
+            case 'wp-devices-2-140':
+            case 'wp-devices-3-210':
+            case 'wp-devices-4-270':
+                expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration for these packages
                 break;
             case 'wp-premium-390':
                 expiryDate.setMonth(expiryDate.getMonth() + 6); // 6 months duration
@@ -38,24 +38,8 @@ router.post('/add', async (req, res) => {
             case 'wp-basic-74':
                 expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
                 break;
-            case 'wp-devices-1-74':
-                expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
-                break;
-            case 'wp-devices-2-140':
-                expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
-                break;
-            case 'wp-devices-3-210':
-                expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
-                break;
-            case 'wp-devices-4-270':
-                expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
-                break;
             case 'wp-user-1-770':
-                expiryDate.setFullYear(expiryDate.getFullYear() + 1); // 12 months duration
-                break;
             case 'wp-user-2-1300':
-                expiryDate.setFullYear(expiryDate.getFullYear() + 1); // 12 months duration
-                break;
             case 'wp-user-4-2200':
                 expiryDate.setFullYear(expiryDate.getFullYear() + 1); // 12 months duration
                 break;
@@ -82,11 +66,15 @@ router.post('/add', async (req, res) => {
         // Determine the PayFast link based on the package
         const payfastLink = determinePayFastLink(package);
 
-        // Respond with the PayFast link if saving is successful
-        res.status(201).json({ message: 'Customer added successfully', payfastLink });
+        // Redirect the user to the PayFast link if a link is provided
+        if (payfastLink) {
+            return res.status(200).json({ message: 'Customer added successfully', payfastLink });
+        } else {
+            return res.status(400).json({ message: 'No valid payment link found for the selected package.' });
+        }
     } catch (err) {
         console.error('Error saving customer:', err);
-        res.status(500).json({ message: 'Error saving customer' });
+        return res.status(500).json({ message: 'Error saving customer' });
     }
 });
 
@@ -94,12 +82,12 @@ router.post('/add', async (req, res) => {
 function determinePayFastLink(package) {
     switch (package) {
         case 'mfc-premium-780':
-            return 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=My+Family+Cinema&amount=780&subscription_type=1';
+            return 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=My+Family+Cinema+Premium&amount=780';
         case 'mfc-standard-420':
-            return 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=My+Family+Cinema&amount=420&subscription_type=1';
+            return 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=My+Family+Cinema+Standard&amount=420';
         case 'wp-basic-74':
-            return 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist-Pro&amount=74&subscription_type=1';
-        // Add other cases here...
+            return 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist+Pro+Basic&amount=74';
+        // Add other cases for packages...
         default:
             return ''; // Return an empty string if no matching package
     }
