@@ -135,19 +135,23 @@ document.addEventListener("DOMContentLoaded", () => {
                     body: JSON.stringify(formData)
                 });
 
-                if (!response.ok) {
-                    throw new Error('Failed to submit the form');
-                }
+                if (response.ok) {
+                    // Parse the JSON response
+                    const data = await response.json();
 
-                // Parse the response
-                const data = await response.json();
-
-                if (data.payfastLink) {
-                    // Redirect to the PayFast payment link
-                    window.location.href = data.payfastLink;
+                    // Check if the PayFast link is provided
+                    if (data.payfastLink) {
+                        // Redirect to the PayFast payment link
+                        window.location.href = data.payfastLink;
+                    } else {
+                        console.error('No payment link provided.');
+                        alert('Error: No payment link provided.');
+                    }
                 } else {
-                    console.error('No payment link provided.');
-                    alert('Error: No payment link provided.');
+                    // Handle non-2xx HTTP responses
+                    const errorData = await response.json();
+                    console.error('Error:', errorData.message);
+                    alert('Error: ' + errorData.message);
                 }
             } catch (error) {
                 console.error('Error submitting form:', error);
@@ -156,3 +160,5 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+
