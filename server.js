@@ -81,7 +81,7 @@ function isAuthenticated(req, res, next) {
 app.post('/customers/add', customersRouter);
 
 // Routes that require authentication
-
+app.use('/customers', isAuthenticated, customersRouter);
 app.use('/api/payfast', payfastRouter);
 
 // Home Route
