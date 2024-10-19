@@ -30,7 +30,6 @@ router.post('/', async (req, res) => {
             case 'wp-basic-74':
                 expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
                 break;
-            // Add more cases as needed for other packages
             default:
                 expiryDate.setMonth(expiryDate.getMonth() + 1); // Default to 1 month if unknown package
         }
@@ -52,16 +51,17 @@ router.post('/', async (req, res) => {
         await newCustomer.save();
 
         // Determine the PayFast link based on the package
-        let payfastLink = determinePayFastLink(package);
+        const payfastLink = determinePayFastLink(package);
 
+        // Check if a valid PayFast link was generated
         if (payfastLink) {
-            res.status(201).json({ message: 'Customer added successfully', payfastLink });
+            return res.status(201).json({ message: 'Customer added successfully', payfastLink });
         } else {
-            res.status(400).json({ message: 'No valid payment link found for the selected package.' });
+            return res.status(400).json({ message: 'No valid payment link found for the selected package.' });
         }
     } catch (err) {
         console.error('Error saving customer:', err);
-        res.status(500).json({ message: 'Error saving customer' });
+        return res.status(500).json({ message: 'Error saving customer' });
     }
 });
 
@@ -80,7 +80,6 @@ function determinePayFastLink(package) {
             return 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist+Pro+Standard&amount=195';
         case 'wp-basic-74':
             return 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=Watchlist+Pro+Basic&amount=74';
-        // Add more cases as needed for other packages
         default:
             return ''; // Return an empty string if no matching package
     }

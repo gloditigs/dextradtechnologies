@@ -130,6 +130,7 @@
     });
 })(jQuery);
 
+
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("pms_register-form");
 
@@ -166,7 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify(formData)
             });
 
-            // Check if the response is JSON
+            // Check if the response is successful
             if (response.ok) {
                 const data = await response.json();
                 if (data.payfastLink) {
