@@ -9,6 +9,11 @@ router.post('/', async (req, res) => {
         // Destructure the request body
         const { fullName, email, whatsappNumber, uids, accounts, package } = req.body;
 
+        // Validate required fields
+        if (!fullName || !email || !whatsappNumber || !package) {
+            return res.status(400).json({ message: 'Missing required fields.' });
+        }
+
         // Calculate the expiry date based on the package duration
         let expiryDate = new Date();
         switch (package) {
@@ -57,11 +62,12 @@ router.post('/', async (req, res) => {
         if (payfastLink) {
             return res.status(201).json({ message: 'Customer added successfully', payfastLink });
         } else {
+            console.error('No valid payment link found for the selected package.');
             return res.status(400).json({ message: 'No valid payment link found for the selected package.' });
         }
     } catch (err) {
         console.error('Error saving customer:', err);
-        return res.status(500).json({ message: 'Error saving customer' });
+        return res.status(500).json({ message: 'Error saving customer', error: err.message });
     }
 });
 
