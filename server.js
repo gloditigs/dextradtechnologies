@@ -10,7 +10,7 @@ const payfastRouter = require('./routes/payfast');
 const cron = require('node-cron');
 const Customer = require('./models/customer');
 const nodemailer = require('nodemailer');
-const path = require('path'); // Importing path for setting views directory
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,22 +18,10 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views')); // Setting the views directory
+app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
-
-
-
-// Session middleware
-app.use(
-    session({
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: false,
-        cookie: { secure: false, httpOnly: true }
-    })
-);
 
 // Session middleware with 5-minute timeout
 app.use(
@@ -41,7 +29,7 @@ app.use(
         secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
-        cookie: { secure: false, httpOnly: true, maxAge: 5 * 60 * 1000 } // 5 minutes in milliseconds
+        cookie: { secure: false, httpOnly: true, maxAge: 5 * 60 * 1000 } // 5 minutes
     })
 );
 
@@ -78,7 +66,8 @@ function isAuthenticated(req, res, next) {
 }
 
 // Allow /customers/add route without authentication
-app.post('/customers/add', customersRouter);
+const addCustomerRouter = require('./routes/addCustomer'); // New route file for customer registration
+app.use('/customers/add', addCustomerRouter);
 
 // Routes that require authentication
 app.use('/customers', isAuthenticated, customersRouter);
@@ -165,4 +154,3 @@ cron.schedule('0 9 * * *', async () => {
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
-
