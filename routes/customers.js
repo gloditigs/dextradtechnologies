@@ -140,11 +140,9 @@ router.post('/add', async (req, res) => {
             case 'mfc-4-accounts':
                 payfastLink = 'https://payment.payfast.io/eng/process?cmd=_paynow&receiver=21701622&item_name=4+Accounts+-+My+Family+Cinema&email_confirmation=1&confirmation_address=sales@dextradtechnologies.co.za&item_description=4+Accounts&amount=296&subscription_type=1&recurring_amount=296&cycles=0&frequency=3';
                 break;
-                default:
-                    throw new Error('Invalid package selected');
+            default:
+                payfastLink = ''; // Default case if no matching package
         }
-
-        
 
         // Respond with the PayFast link to redirect the user
          if (source !== 'manual') {
