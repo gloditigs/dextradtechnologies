@@ -33,6 +33,25 @@ app.use(
     })
 );
 
+// Session middleware with 5-minute timeout
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        cookie: { secure: false, httpOnly: true, maxAge: 5 * 60 * 1000 } // 5 minutes in milliseconds
+    })
+);
+
+// Middleware to track user activity and refresh session expiration time
+app.use((req, res, next) => {
+    if (req.session.isAuthenticated) {
+        req.session._garbage = Date();
+        req.session.touch(); // Refresh session to prevent immediate expiration
+    }
+    next();
+});
+
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB connected'))
