@@ -144,8 +144,7 @@ router.post('/add', async (req, res) => {
                     throw new Error('Invalid package selected');
         }
 
-        // Redirect the user to the PayFast link
-        res.redirect(payfastLink);
+        
 
         // Respond with the PayFast link to redirect the user
          if (source !== 'manual') {
