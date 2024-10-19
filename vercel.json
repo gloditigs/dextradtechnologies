@@ -17,6 +17,11 @@
     { "src": "/login", "dest": "/server.js" },
     { "src": "/(.*)", "dest": "/public/$1" }
   ],
+  "functions": {
+    "server.js": {
+      "maxDuration": 10 
+    }
+  },
   "env": {
     "MONGO_URI": "mongodb+srv://mbalawebservices:Gloditigs781227%2A@dextradtechnologies.7p7fm.mongodb.net/?retryWrites=true&w=majority&appName=DextradTechnologies",
     "EMAIL_USER": "invoice.dextradtechnologies@gmail.com",
