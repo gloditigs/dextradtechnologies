@@ -156,43 +156,34 @@ document.addEventListener("DOMContentLoaded", () => {
             package: document.querySelector('input[name="subscription_plans"]:checked').value
         };
 
-       
-                document.getElementById('pms_register-form').addEventListener('submit', async function(event) {
-                    event.preventDefault(); // Prevent the default form submission
-        
-                    const form = event.target;
-                    const formData = new FormData(form);
-                    const jsonData = Object.fromEntries(formData.entries());
-        
-                    try {
-                        // Make a POST request to the backend
-                        const response = await fetch('https://www.dextradtechnologies.co.za/customers/add', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(jsonData)
-                        });
-        
-                        // Check if the response is JSON
-                        const contentType = response.headers.get('content-type');
-                        if (contentType && contentType.indexOf('application/json') !== -1) {
-                            const data = await response.json();
-                            if (response.ok) {
-                                // Redirect to the PayFast payment link
-                                window.location.href = data.payfastLink;
-                            } else {
-                                alert('Error: ' + data.message);
-                            }
-                        } else {
-                            // Handle non-JSON response
-                            const text = await response.text();
-                            console.error('Error submitting form:', text);
-                            alert('Error: Unexpected response from server.');
-                        }
-                    } catch (error) {
-                        console.error('Error submitting form:', error);
-                        alert('Error submitting form: ' + error.message);
-                    }
-                });
+        try {
+            // Make a POST request to the backend
+            const response = await fetch('https://www.dextradtechnologies.co.za/customers/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
             
+
+              // Check if the response is JSON
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.indexOf('application/json') !== -1) {
+                const data = await response.json();
+                if (response.ok) {
+                    // Redirect to the PayFast payment link
+                    window.location.href = data.payfastLink;
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } else {
+                // Handle non-JSON response
+                const text = await response.text();
+                console.error('Error submitting form:', text);
+                alert('Error: Unexpected response from server.');
+            }
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            alert('Error submitting form: ' + error.message);
+        }

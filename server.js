@@ -163,3 +163,27 @@ cron.schedule('0 9 * * *', async () => {
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
+
+// Handle form submission for pms_register-form
+app.post('/pms_register-form', async (req, res) => {
+    try {
+        const response = await fetch('https://www.dextradtechnologies.co.za/customers/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(req.body)
+        });
+
+        if (response.ok) {
+            const customer = await response.json();
+            // Assuming the response contains a payment link
+            res.redirect(customer.paymentLink);
+        } else {
+            res.status(response.status).send('Error submitting form');
+        }
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
