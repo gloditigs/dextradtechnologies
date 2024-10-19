@@ -13,6 +13,7 @@
   "routes": [
     { "src": "/customers", "dest": "server.js" },
     { "src": "/customers/delete/([^/]+)", "dest": "/server.js" },
+    { "src": "/customers/add/([^/]+)", "dest": "/server.js" },
     { "src": "/login", "dest": "server.js" },
     { "src": "/(.*)", "dest": "/public/$1" },
     { "src": "/", "dest": "/public/index.html" }
