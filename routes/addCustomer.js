@@ -58,7 +58,7 @@ router.post('/', async (req, res) => {
         // Determine the PayFast link based on the package
         const payfastLink = determinePayFastLink(package);
 
-        // If a valid PayFast link was generated, return it
+        // Check if a valid PayFast link was generated
         if (payfastLink) {
             return res.status(201).json({ message: 'Customer added successfully', payfastLink });
         } else {
