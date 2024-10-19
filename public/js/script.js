@@ -165,9 +165,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 body: JSON.stringify(formData)
             });
-            
 
-              // Check if the response is JSON
+            // Check if the response is JSON
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.indexOf('application/json') !== -1) {
                 const data = await response.json();
@@ -181,9 +180,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Handle non-JSON response
                 const text = await response.text();
                 console.error('Error submitting form:', text);
-                alert('Error: Unexpected response from server.');
+                alert('Error: Unexpected response from server. Please try again.');
             }
         } catch (error) {
             console.error('Error submitting form:', error);
             alert('Error submitting form: ' + error.message);
         }
+    });
+});
