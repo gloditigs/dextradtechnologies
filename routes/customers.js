@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Customer = require('../models/customer');
-const crypto = require('crypto');
 
 // Route to add a new customer
-router.post('/add', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         // Destructure the request body
         const { fullName, email, whatsappNumber, uids, accounts, package, source } = req.body;

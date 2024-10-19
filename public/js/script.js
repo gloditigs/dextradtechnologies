@@ -130,7 +130,6 @@
     });
 })(jQuery);
 
-
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("pms_register-form");
 
