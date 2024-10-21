@@ -11,7 +11,7 @@ router.post('/', async (req, res) => {
 
         // Validate required fields
         if (!fullName || !email || !whatsappNumber || !package) {
-            return res.status(400).json({ message: 'Missing required fields.' });
+            return res.status(400).json({ message: 'Missing required fields. Make sure all fields are filled correctly.' });
         }
 
         // Calculate the expiry date based on the package duration
@@ -36,7 +36,7 @@ router.post('/', async (req, res) => {
                 expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
                 break;
             default:
-                expiryDate.setMonth(expiryDate.getMonth() + 1); // Default to 1 month if unknown package
+                return res.status(400).json({ message: 'Invalid package type selected.' });
         }
 
         // Create a new customer instance with the data
@@ -58,11 +58,10 @@ router.post('/', async (req, res) => {
         // Determine the PayFast link based on the package
         const payfastLink = determinePayFastLink(package);
 
-        // Check if a valid PayFast link was generated
+        // Return the PayFast link if successful
         if (payfastLink) {
             return res.status(201).json({ message: 'Customer added successfully', payfastLink });
         } else {
-            console.error('No valid payment link found for the selected package.');
             return res.status(400).json({ message: 'No valid payment link found for the selected package.' });
         }
     } catch (err) {

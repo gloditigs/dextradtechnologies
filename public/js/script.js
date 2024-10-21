@@ -97,68 +97,61 @@ import fetch from 'node-fetch';  // Make sure to use fetch for server-side reque
     });
 })(jQuery);
 
-// Form submission logic
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("pms_register-form");
 
-    if (form) {
-        form.addEventListener("submit", async (event) => {
-            event.preventDefault(); // Prevent the default form submission
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault(); // Prevent the default form submission
 
-            // Collect form data
-            const formData = {
-                fullName: document.getElementById('first_name').value + ' ' + document.getElementById('last_name').value,
-                email: document.getElementById('email').value,
-                whatsappNumber: document.getElementById('whatsapp').value,
-                uids: [
-                    document.getElementById('uid').value,
-                    document.getElementById('uid2').value,
-                    document.getElementById('uid3').value,
-                    document.getElementById('uid4').value
-                ].filter(Boolean), // Collect UIDs and filter out any empty values
-                accounts: [
-                    document.getElementById('account').value,
-                    document.getElementById('account2').value,
-                    document.getElementById('account3').value,
-                    document.getElementById('account4').value
-                ].filter(Boolean), // Collect account values and filter out any empty values
-                package: document.querySelector('input[name="subscription_plans"]:checked').value
-            };
+        // Collect form data
+        const formData = {
+            fullName: `${document.getElementById('first_name').value} ${document.getElementById('last_name').value}`,
+            email: document.getElementById('email').value,
+            whatsappNumber: document.getElementById('whatsapp').value,
+            uids: [
+                document.getElementById('uid').value,
+                document.getElementById('uid2').value,
+                document.getElementById('uid3').value,
+                document.getElementById('uid4').value
+            ].filter(Boolean), // Collect UIDs and filter out any empty values
+            accounts: [
+                document.getElementById('account').value,
+                document.getElementById('account2').value,
+                document.getElementById('account3').value,
+                document.getElementById('account4').value
+            ].filter(Boolean), // Collect account values and filter out any empty values
+            package: document.querySelector('input[name="subscription_plans"]:checked').value
+        };
 
-            try {
-                // Make a POST request to the backend
-                const response = await fetch('https://www.dextradtechnologies.co.za/customers/add', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                });
+        try {
+            // Make a POST request to the backend
+            const response = await fetch('https://www.dextradtechnologies.co.za/customers/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
 
-                if (response.ok) {
-                    // Parse the JSON response
-                    const data = await response.json();
-
-                    // Check if the PayFast link is provided
-                    if (data.payfastLink) {
-                        // Redirect to the PayFast payment link
-                        window.location.href = data.payfastLink;
-                    } else {
-                        console.error('No payment link provided.');
-                        alert('Error: No payment link provided.');
-                    }
+            // Check if the response is JSON
+            const contentType = response.headers.get('content-type');
+            if (response.ok && contentType && contentType.includes('application/json')) {
+                const data = await response.json();
+                if (data.payfastLink) {
+                    // Redirect to the PayFast payment link
+                    window.location.href = data.payfastLink;
                 } else {
-                    // Handle non-2xx HTTP responses
-                    const errorData = await response.json();
-                    console.error('Error:', errorData.message);
-                    alert('Error: ' + errorData.message);
+                    alert('Error: ' + (data.message || 'Payment link not found.'));
                 }
-            } catch (error) {
-                console.error('Error submitting form:', error);
-                alert('Error submitting form: ' + error.message);
+            } else {
+                // Handle non-JSON response
+                const text = await response.text();
+                console.error('Error submitting form:', text);
+                alert('Error: Unexpected response from server. Please try again.');
             }
-        });
-    }
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            alert('Error submitting form: ' + error.message);
+        }
+    });
 });
-
-
