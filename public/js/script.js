@@ -96,7 +96,6 @@ import fetch from 'node-fetch';  // Make sure to use fetch for server-side reque
         }
     });
 })(jQuery);
-
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("pms_register-form");
 
@@ -104,10 +103,21 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault(); // Prevent the default form submission
 
         // Collect form data
+        const fullName = `${document.getElementById('first_name').value.trim()} ${document.getElementById('last_name').value.trim()}`;
+        const email = document.getElementById('email').value.trim();
+        const whatsappNumber = document.getElementById('whatsapp').value.trim();
+        const packageSelected = document.querySelector('input[name="subscription_plans"]:checked').value;
+
+        // Ensure all required fields are present
+        if (!fullName || !email || !whatsappNumber || !packageSelected) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+
         const formData = {
-            fullName: `${document.getElementById('first_name').value} ${document.getElementById('last_name').value}`,
-            email: document.getElementById('email').value,
-            whatsappNumber: document.getElementById('whatsapp').value,
+            fullName,
+            email,
+            whatsappNumber,
             uids: [
                 document.getElementById('uid').value,
                 document.getElementById('uid2').value,
@@ -120,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById('account3').value,
                 document.getElementById('account4').value
             ].filter(Boolean), // Collect account values and filter out any empty values
-            package: document.querySelector('input[name="subscription_plans"]:checked').value
+            package: packageSelected
         };
 
         try {
@@ -133,21 +143,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify(formData)
             });
 
-            // Check if the response is JSON
-            const contentType = response.headers.get('content-type');
-            if (response.ok && contentType && contentType.includes('application/json')) {
+            if (response.ok) {
                 const data = await response.json();
                 if (data.payfastLink) {
                     // Redirect to the PayFast payment link
                     window.location.href = data.payfastLink;
                 } else {
-                    alert('Error: ' + (data.message || 'Payment link not found.'));
+                    alert('Payment link not found. Please try again.');
                 }
             } else {
-                // Handle non-JSON response
-                const text = await response.text();
-                console.error('Error submitting form:', text);
-                alert('Error: Unexpected response from server. Please try again.');
+                const errorData = await response.json();
+                console.error('Error: ', errorData.message);
+                alert('Error: ' + errorData.message);
             }
         } catch (error) {
             console.error('Error submitting form:', error);
