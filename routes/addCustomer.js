@@ -36,7 +36,7 @@ router.post('/', async (req, res) => {
                 expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month duration
                 break;
             default:
-                return res.status(400).json({ message: 'Invalid package type selected.' });
+                return res.status(400).json({ message: 'Invalid package selected' });
         }
 
         // Create a new customer instance with the data
@@ -58,10 +58,11 @@ router.post('/', async (req, res) => {
         // Determine the PayFast link based on the package
         const payfastLink = determinePayFastLink(package);
 
-        // Return the PayFast link if successful
+        // Check if a valid PayFast link was generated
         if (payfastLink) {
             return res.status(201).json({ message: 'Customer added successfully', payfastLink });
         } else {
+            console.error('No valid payment link found for the selected package.');
             return res.status(400).json({ message: 'No valid payment link found for the selected package.' });
         }
     } catch (err) {

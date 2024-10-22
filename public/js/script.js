@@ -123,6 +123,12 @@ document.addEventListener("DOMContentLoaded", () => {
             package: document.querySelector('input[name="subscription_plans"]:checked').value
         };
 
+        // Check if any required fields are missing before submitting the form
+        if (!formData.fullName || !formData.email || !formData.whatsappNumber || !formData.package) {
+            alert('Please fill in all the required fields.');
+            return;
+        }
+
         try {
             // Make a POST request to the backend
             const response = await fetch('https://www.dextradtechnologies.co.za/customers/add', {
@@ -133,21 +139,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify(formData)
             });
 
-            // Check if the response is JSON
-            const contentType = response.headers.get('content-type');
-            if (contentType && contentType.indexOf('application/json') !== -1) {
-                const data = await response.json();
-                if (response.ok && data.payfastLink) {
-                    // Redirect to the PayFast payment link
-                    window.location.href = data.payfastLink;
-                } else {
-                    alert('Error: ' + data.message);
-                }
+            // Parse response as JSON
+            const data = await response.json();
+            if (response.ok && data.payfastLink) {
+                // Redirect to the PayFast payment link
+                window.location.href = data.payfastLink;
             } else {
-                // Handle non-JSON response
-                const text = await response.text();
-                console.error('Error submitting form:', text);
-                alert('Error: Unexpected response from server. Please try again.');
+                console.error('Error: ' + (data.message || 'An unknown error occurred.'));
+                alert('Error: ' + (data.message || 'An unknown error occurred.'));
             }
         } catch (error) {
             console.error('Error submitting form:', error);
