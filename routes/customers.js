@@ -1,7 +1,7 @@
 // routes/customers.js
 const express = require('express');
 const router = express.Router();
-const Customer = require('../models/Customer');
+const Customer = require('../models/Customer'); // Ensure this path is correct
 const crypto = require('crypto');
 
 // Create PayFast signature for ITN verification
