@@ -105,33 +105,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Collect form data
         const formData = {
-            fullName: document.getElementById('first_name').value + ' ' + document.getElementById('last_name').value,
-            email: document.getElementById('email').value,
-            whatsappNumber: document.getElementById('whatsapp').value,
-            uids: [
-                document.getElementById('uid').value,
-                document.getElementById('uid2').value,
-                document.getElementById('uid3').value,
-                document.getElementById('uid4').value
-            ].filter(Boolean), // Collect UIDs and filter out any empty values
-            accounts: [
-                document.getElementById('account').value,
-                document.getElementById('account2').value,
-                document.getElementById('account3').value,
-                document.getElementById('account4').value
-            ].filter(Boolean), // Collect account values and filter out any empty values
-            package: document.querySelector('input[name="subscription_plans"]:checked').value
+            whatsapp: document.getElementById('whatsapp').value,
+            user_email: document.getElementById('email').value,
+            first_name: document.getElementById('first_name').value,
+            last_name: document.getElementById('last_name').value,
+            uid: document.getElementById('uid').value,
+            uid2: document.getElementById('uid2').value,
+            uid3: document.getElementById('uid3').value,
+            uid4: document.getElementById('uid4').value,
+            account: document.getElementById('account').value,
+            account2: document.getElementById('account2').value,
+            account3: document.getElementById('account3').value,
+            account4: document.getElementById('account4').value,
+            subscription_plans: document.querySelector('input[name="subscription_plans"]:checked').value
         };
-
-        // Check if any required fields are missing before submitting the form
-        if (!formData.fullName || !formData.email || !formData.whatsappNumber || !formData.package) {
-            alert('Please fill in all the required fields.');
-            return;
-        }
 
         try {
             // Make a POST request to the backend
-            const response = await fetch('https://www.dextradtechnologies.co.za/customers/add', {
+            const response = await fetch('/customers/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

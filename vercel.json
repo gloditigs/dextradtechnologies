@@ -15,6 +15,9 @@
     { "src": "/customers", "dest": "/server.js" },
     { "src": "/customers/(.*)", "dest": "/server.js" },
     { "src": "/login", "dest": "/server.js" },
+    { "src": "/watchlist-pro", "dest": "/public/watchlist-pro.html" },
+    { "src": "/my-family-cinema", "dest": "/public/my-family-cinema.html" },
+    { "src": "/", "dest": "/public/index.html" },  
     { "src": "/(.*)", "dest": "/public/$1" }
   ],
   "env": {

@@ -1,16 +1,19 @@
+// models/Customer.js
 const mongoose = require('mongoose');
 
 const customerSchema = new mongoose.Schema({
-    fullName: { type: String, required: true },
+    fullName: String,
     email: { type: String, required: true },
     whatsappNumber: { type: String, required: true },
-    uids: [String], // Array to store multiple UIDs
-    accounts: [String], // Array to store multiple accounts
-    package: { type: String, required: true },
-    paymentStatus: { type: String, enum: ['paid', 'unpaid'], default: 'unpaid' },
-    source: { type: String, enum: ['website', 'manual'], default: 'website' },
-    expiryDate: { type: Date },
+    uids: [String], // Array of UIDs
+    accounts: [String], // Array of Accounts
+    package: String, // Selected package
+    expiryDate: Date, // When the package expires
+    paymentStatus: { type: String, default: 'unpaid' }, // unpaid/paid
+    cloud: { type: Boolean, default: false }, // Whether cloud is enabled or not
+    source: { type: String, default: 'website' } // 'website' or 'manual'
 });
 
 const Customer = mongoose.model('Customer', customerSchema);
+
 module.exports = Customer;

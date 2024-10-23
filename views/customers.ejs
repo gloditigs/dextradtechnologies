@@ -1,182 +1,66 @@
+<!-- views/customers.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customers</title>
-    <link rel="stylesheet" href="/css/popup-form.css">
-    <link rel="stylesheet" href="/css/database.css">
+    <title>Admin - Customers</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <h1>Customers List</h1>
-
-    <!-- Search and Filter Form -->
-    <form action="/customers" method="GET">
-        <input type="text" name="search" placeholder="Search by Name, Email, UID, or Account" value="<%= searchTerm %>">
+    <h1>Customers</h1>
+    <form method="GET" action="/customers">
+        <input type="text" name="search" placeholder="Search by name, email, UID">
         <select name="platform">
             <option value="">All Platforms</option>
-            <option value="wp" <%= platformFilter === 'wp' ? 'selected' : '' %>>Watchlist Pro</option>
-            <option value="mfc" <%= platformFilter === 'mfc' ? 'selected' : '' %>>My Family Cinema</option>
+            <option value="watchlist-pro">Watchlist Pro</option>
+            <option value="my-family-cinema">My Family Cinema</option>
         </select>
         <button type="submit">Search</button>
     </form>
-    
-    <button id="add-user-button">Add User</button>
-
-    <!-- Add User Popup Form -->
-    <div id="add-user-popup" class="popup-form" style="display: none;">
-        <form id="manual-add-form">
-            <h3>Add User</h3>
-            <input type="text" id="fullName" name="fullName" placeholder="Full Name" required>
-            
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-            
-            <label for="whatsappNumber">WhatsApp Number:</label>
-            <input type="tel" id="whatsappNumber" name="whatsappNumber" required>
-            
-            <label for="package">Package:</label>
-            <select id="package" name="package" required>
-                <!-- Watchlist Pro Packages -->
-                <option value="wp-basic-74">Watchlist Pro Basic (R74 / Monthly)</option>
-                <option value="wp-standard-195">Watchlist Pro Standard (R195 / 3 Months)</option>
-                <option value="wp-premium-390">Watchlist Pro Premium (R390 / 6 Months)</option>
-                <option value="wp-devices-1-74">Watchlist Pro (1 Device - R74 / Monthly)</option>
-                <option value="wp-devices-2-140">Watchlist Pro (2 Devices - R140 / Monthly)</option>
-                <option value="wp-devices-3-210">Watchlist Pro (3 Devices - R210 / Monthly)</option>
-                <option value="wp-devices-4-270">Watchlist Pro (4 Devices - R270 / Monthly)</option>
-                <option value="wp-user-1-770">Watchlist Pro (1 User - R770 / Yearly)</option>
-                <option value="wp-user-2-1300">Watchlist Pro Duo (2 Users - R1300 / Yearly)</option>
-                <option value="wp-user-4-2200">Watchlist Pro Family (4 Users - R2200 / Yearly)</option>
-
-                <!-- My Family Cinema Packages -->
-                <option value="mfc-basic-74">My Family Cinema Basic (R74 / Monthly)</option>
-                <option value="mfc-standard-420">My Family Cinema Standard (R420 / 6 Months)</option>
-                <option value="mfc-premium-780">My Family Cinema Premium (R780 / 12 Months)</option>
-                <option value="mfc-2-accounts">My Family Cinema (2 Accounts - R148 / Monthly)</option>
-                <option value="mfc-3-accounts">My Family Cinema (3 Accounts - R222 / Monthly)</option>
-                <option value="mfc-4-accounts">My Family Cinema (4 Accounts - R296 / Monthly)</option>
-            </select>
-            
-            <label for="uids">UIDs (comma-separated):</label>
-            <input type="text" id="uids" name="uids">
-            
-            <label for="accounts">Accounts (comma-separated):</label>
-            <input type="text" id="accounts" name="accounts">
-            
-            <button type="submit">Add User</button>
-            <button type="button" id="cancel-add-user">Cancel</button>
-        </form>
-    </div>
 
     <table>
-        <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>WhatsApp</th>
-            <th>Package</th>
-            <th>Payment Status</th>
-            <th>Source</th>
-            <th>Expiry Date</th>
-            <th>UIDs</th>
-            <th>Accounts</th>
-            <th>Action</th>
-        </tr>
-        <% customers.forEach(customer => { %>
-            <tr style="color: <%= customer.paymentStatus === 'paid' ? 'green' : 'red' %>">
-                <td><%= customer.fullName %></td>
-                <td><%= customer.email %></td>
-                <td><%= customer.whatsappNumber %></td>
-                <td><%= customer.package %></td>
-                <td><%= customer.paymentStatus %></td>
-                <td><%= customer.source %></td>
-                <td><%= customer.expiryDate.toDateString() %></td>
-                <td>
-                    <% if (customer.uids && customer.uids.length > 0) { %>
-                        <ul>
-                            <% customer.uids.forEach(uid => { %>
-                                <li><%= uid %></li>
-                            <% }) %>
-                        </ul>
-                    <% } else { %>
-                        No UIDs
-                    <% } %>
-                </td>
-                <td>
-                    <% if (customer.accounts && customer.accounts.length > 0) { %>
-                        <ul>
-                            <% customer.accounts.forEach(account => { %>
-                                <li><%= account %></li>
-                            <% }) %>
-                        </ul>
-                    <% } else { %>
-                        No Accounts
-                    <% } %>
-                </td>
-                <td>
-                    <form action="/customers/delete/<%= customer._id %>" method="POST">
-                        <button type="submit">Delete</button>
-                    </form>
-                </td>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Package</th>
+                <th>Payment Status</th>
+                <th>Cloud</th>
+                <th>Source</th>
             </tr>
-        <% }) %>
+        </thead>
+        <tbody>
+            <% customers.forEach(customer => { %>
+                <tr>
+                    <td><%= customer.fullName %></td>
+                    <td><%= customer.email %></td>
+                    <td><%= customer.package %></td>
+                    <td><%= customer.paymentStatus === 'paid' ? '🟢' : '🔴' %></td>
+                    <td>
+                        <form method="POST" action="/customers/toggle-cloud/<%= customer._id %>">
+                            <input type="checkbox" name="cloud" <%= customer.cloud ? 'checked' : '' %> onchange="this.form.submit()">
+                        </form>
+                    </td>
+                    <td><%= customer.source %></td>
+                </tr>
+            <% }) %>
+        </tbody>
     </table>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const addUserButton = document.getElementById("add-user-button");
-            const addUserPopup = document.getElementById("add-user-popup");
-            const manualAddForm = document.getElementById("manual-add-form");
-            const cancelAddUserButton = document.getElementById("cancel-add-user");
-
-            // Show the popup form when the "Add User" button is clicked
-            addUserButton.addEventListener("click", () => {
-                addUserPopup.style.display = "flex";
-            });
-
-            // Hide the popup form when "Cancel" is clicked
-            cancelAddUserButton.addEventListener("click", () => {
-                addUserPopup.style.display = "none";
-            });
-
-            // Handle form submission for adding a user manually
-            manualAddForm.addEventListener("submit", async (event) => {
-                event.preventDefault();
-                
-                // Collect form data
-                const formData = {
-                    fullName: document.getElementById("fullName").value,
-                    email: document.getElementById("email").value,
-                    whatsappNumber: document.getElementById("whatsappNumber").value,
-                    package: document.getElementById("package").value,
-                    uids: document.getElementById("uids").value.split(',').map(uid => uid.trim()),
-                    accounts: document.getElementById("accounts").value.split(',').map(acc => acc.trim()),
-                    source: "manual"
-                };
-
-                try {
-                    // Make a POST request to the backend
-                    const response = await fetch('https://www.dextradtechnologies.co.za/customers/add', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(formData)
-                    });
-
-                    const data = await response.json();
-                    if (response.ok) {
-                        alert('User added successfully');
-                        window.location.reload();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                } catch (error) {
-                    console.error('Error adding user:', error);
-                    alert('An error occurred while adding the user. Please try again.');
-                }
-            });
-        });
-    </script>
+    <h2>Add User Manually</h2>
+    <form method="POST" action="/customers/add">
+        <input type="text" name="fullName" placeholder="Full Name" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="text" name="whatsappNumber" placeholder="Whatsapp" required>
+        <input type="text" name="uids" placeholder="UID" required>
+        <input type="text" name="accounts" placeholder="Account" required>
+        <select name="package">
+            <option value="mfc-premium-780">MFC Premium</option>
+            <option value="mfc-standard-420">MFC Standard</option>
+            <!-- Add more package options -->
+        </select>
+        <button type="submit">Add User</button>
+    </form>
 </body>
 </html>
