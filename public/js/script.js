@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             // Make a POST request to the backend
-            const response = await fetch('/customers/add', {
+            const response = await fetch('https://www.dextradtechnologies.co.za/customers/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
