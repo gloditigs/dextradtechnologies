@@ -97,12 +97,13 @@ import fetch from 'node-fetch';  // Make sure to use fetch for server-side reque
     });
 })(jQuery);
 
+
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("pms_register-form");
-    const formContainer = document.querySelector('.pms-form-fields-wrapper'); // Container where the Pay Now button will be added
+    const formContainer = document.querySelector('.pms-form-fields-wrapper');  // Where the "Pay Now" button will go
 
-    form.addEventListener("submit", async (event) => {
-        event.preventDefault(); // Prevent the default form submission
+  form.addEventListener("submit", async (event) => {
+        event.preventDefault(); // Prevent the form from reloading the page
 
         // Collect form data
         const formData = {
@@ -131,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify(formData)
             });
 
-            // Parse response as JSON
+            // Parse the response as JSON
             const data = await response.json();
             if (response.ok && data.payfastLink) {
                 // Clear the form and show a "Pay Now" button
@@ -154,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 payNowButton.style.border = 'none';
                 payNowButton.style.cursor = 'pointer';
 
-                // Add a click event to redirect to the PayFast payment link
+                // Add click event to redirect to the PayFast payment link
                 payNowButton.addEventListener('click', () => {
                     window.location.href = data.payfastLink;
                 });
