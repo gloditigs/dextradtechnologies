@@ -99,6 +99,7 @@ import fetch from 'node-fetch';  // Make sure to use fetch for server-side reque
 
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("pms_register-form");
+    const formContainer = document.querySelector('.pms-form-fields-wrapper'); // Container where the Pay Now button will be added
 
     form.addEventListener("submit", async (event) => {
         event.preventDefault(); // Prevent the default form submission
@@ -133,8 +134,33 @@ document.addEventListener("DOMContentLoaded", () => {
             // Parse response as JSON
             const data = await response.json();
             if (response.ok && data.payfastLink) {
-                // Redirect to the PayFast payment link
-                window.location.href = data.payfastLink;
+                // Clear the form and show a "Pay Now" button
+                form.reset();
+
+                // Remove any existing "Pay Now" button if it exists
+                const existingButton = document.getElementById('pay-now-button');
+                if (existingButton) {
+                    existingButton.remove();
+                }
+
+                // Create a "Pay Now" button
+                const payNowButton = document.createElement('button');
+                payNowButton.id = 'pay-now-button';
+                payNowButton.innerText = 'Pay Now';
+                payNowButton.style.padding = '10px 20px';
+                payNowButton.style.fontSize = '16px';
+                payNowButton.style.backgroundColor = '#28a745';
+                payNowButton.style.color = '#fff';
+                payNowButton.style.border = 'none';
+                payNowButton.style.cursor = 'pointer';
+
+                // Add a click event to redirect to the PayFast payment link
+                payNowButton.addEventListener('click', () => {
+                    window.location.href = data.payfastLink;
+                });
+
+                // Append the "Pay Now" button to the form container
+                formContainer.appendChild(payNowButton);
             } else {
                 console.error('Error: ' + (data.message || 'An unknown error occurred.'));
                 alert('Error: ' + (data.message || 'An unknown error occurred.'));
