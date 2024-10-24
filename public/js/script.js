@@ -97,13 +97,12 @@ import fetch from 'node-fetch';  // Make sure to use fetch for server-side reque
     });
 })(jQuery);
 
-
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("pms_register-form");
-    const formContainer = document.querySelector('.pms-form-fields-wrapper');  // Where the "Pay Now" button will go
+    const formContainer = document.querySelector('.pms-form-fields-wrapper'); // The container where the "Pay Now" button will be added
 
-  form.addEventListener("submit", async (event) => {
-        event.preventDefault(); // Prevent the form from reloading the page
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault(); // Prevent default form submission
 
         // Collect form data
         const formData = {
@@ -122,8 +121,14 @@ document.addEventListener("DOMContentLoaded", () => {
             subscription_plans: document.querySelector('input[name="subscription_plans"]:checked').value
         };
 
+        // Clear previous Pay Now button if exists
+        const existingButton = document.getElementById('pay-now-button');
+        if (existingButton) {
+            existingButton.remove();
+        }
+
         try {
-            // Make a POST request to the backend
+            // Send form data to the backend via fetch (AJAX)
             const response = await fetch('https://www.dextradtechnologies.co.za/customers/add', {
                 method: 'POST',
                 headers: {
@@ -132,19 +137,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify(formData)
             });
 
-            // Parse the response as JSON
             const data = await response.json();
+            
             if (response.ok && data.payfastLink) {
-                // Clear the form and show a "Pay Now" button
-                form.reset();
-
-                // Remove any existing "Pay Now" button if it exists
-                const existingButton = document.getElementById('pay-now-button');
-                if (existingButton) {
-                    existingButton.remove();
-                }
-
-                // Create a "Pay Now" button
+                // Create a "Pay Now" button dynamically
                 const payNowButton = document.createElement('button');
                 payNowButton.id = 'pay-now-button';
                 payNowButton.innerText = 'Pay Now';
@@ -155,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 payNowButton.style.border = 'none';
                 payNowButton.style.cursor = 'pointer';
 
-                // Add click event to redirect to the PayFast payment link
+                // Add click event to redirect to PayFast payment link
                 payNowButton.addEventListener('click', () => {
                     window.location.href = data.payfastLink;
                 });
@@ -163,8 +159,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Append the "Pay Now" button to the form container
                 formContainer.appendChild(payNowButton);
             } else {
-                console.error('Error: ' + (data.message || 'An unknown error occurred.'));
-                alert('Error: ' + (data.message || 'An unknown error occurred.'));
+                console.error('Error:', data.message || 'Unknown error occurred.');
+                alert('Error: ' + (data.message || 'Unknown error occurred.'));
             }
         } catch (error) {
             console.error('Error submitting form:', error);
