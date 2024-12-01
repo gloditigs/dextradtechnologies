@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@clerk/clerk-sdk-node": "^5.0.54",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
@@ -20,6 +21,8 @@
     "express-session": "^1.18.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.7.2",
-    "nodemailer": "^6.9.15"
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.15",
+    "puppeteer": "^23.8.0"
   }
 }

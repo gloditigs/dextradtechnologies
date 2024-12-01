@@ -10,6 +10,7 @@ const CustomerSchema = new mongoose.Schema({
     package: { type: String, required: true },
     expiryDate: { type: Date, required: true },
     paymentStatus: { type: String, default: 'unpaid' },
+    cloud: { type: Boolean, default: false }, // Ensure cloud field is here
     source: { type: String, default: 'website' }
 });
 

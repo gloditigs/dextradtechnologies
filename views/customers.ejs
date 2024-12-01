@@ -9,58 +9,314 @@
 </head>
 <body>
     <h1>Customers</h1>
-    <form method="GET" action="/customers">
+    <div class="nav-bar-search">
+      <form method="GET" action="/customers">
         <input type="text" name="search" placeholder="Search by name, email, UID">
+        
         <select name="platform">
             <option value="">All Platforms</option>
-            <option value="watchlist-pro">Watchlist Pro</option>
-            <option value="my-family-cinema">My Family Cinema</option>
+            <option value="wp">Watchlist Pro</option>
+            <option value="mfc">My Family Cinema</option>
         </select>
+        
+        <!-- New filter for cloud status -->
+        <select name="cloud">
+            <option value="">Cloud</option>
+            <option value="checked">Cloud Active</option>
+            <option value="inactive">Cloud Inactive</option>
+        </select>
+
+         <!-- New Payment Status Filter -->
+    <select name="paymentStatus">
+        <option value="">All Payment Status</option>
+        <option value="paid">Paid</option>
+        <option value="unpaid">Unpaid</option>
+    </select>
+    
         <button type="submit">Search</button>
     </form>
+    
+</div>
+    <button class="gen-button" id="openFormBtn">Add User</button>
+    
+    <div class="table-container">
+      <table>
+          <thead>
+              <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Package</th>
+                  <th>UIDs</th>
+                  <th>Accounts</th>
+                  <th>WhatsApp Number</th>
+                  <th>Expiration Date</th>
+                  <th>Payment Status</th>
+                  <th>Cloud</th>
+                  <th>Source</th>
+                  <th>Actions</th>
+              </tr>
+          </thead>
+          <tbody>
+              <% customers.forEach(customer => { %>
+                  <tr>
+                      <td><%= customer.fullName %></td>
+                      <td><%= customer.email %></td>
+                      <td><%= customer.package %></td>
+                      <td><%= customer.uids.join(', ') %></td>
+                      <td><%= customer.accounts.join(', ') %></td>
+                      <td><%= customer.whatsappNumber %></td>
+                      <td><%= new Date(customer.expiryDate).toLocaleDateString() %></td>
+                      <td>
+                          <form method="POST" action="/customers/toggle-payment/<%= customer._id %>">
+                              <input type="checkbox" name="paymentStatus" <%= customer.paymentStatus === 'paid' ? 'checked' : '' %> onchange="this.form.submit()">
+                              <%= customer.paymentStatus === 'paid' ? '🟢 Paid' : '🔴 Unpaid' %>
+                          </form>
+                      </td>
+                      <td>
+                          <form method="POST" action="/customers/toggle-cloud/<%= customer._id %>">
+                              <input type="checkbox" name="cloud" <%= customer.cloud ? 'checked' : '' %> onchange="this.form.submit()">
+                          </form>
+                      </td>
+                      <td><%= customer.source %></td>
+                      <td>
+                          <button type="button" onclick="openEditForm('<%= customer._id %>', '<%= customer.fullName %>', '<%= customer.email %>', '<%= customer.package %>', '<%= customer.uids.join(', ') %>', '<%= customer.accounts.join(', ') %>', '<%= customer.whatsappNumber %>', '<%= customer.expiryDate %>')">
+                              ✏️
+                          </button>
+                          <form method="POST" action="/customers/delete/<%= customer._id %>" onsubmit="return confirm('Are you sure you want to delete this user?');" style="display: inline;">
+                              <button type="submit" style="color: red;">Delete</button>
+                          </form>
+                      </td>
+                  </tr>
+              <% }) %>
+          </tbody>
+      </table>
+  </div>
+  
+  
+  
+    
+    
+<!-- Edit User Modal -->
+<div id="editUserModal" class="modal-form-container">
+  <div class="modal-form-content">
+      <span class="close-btn" onclick="closeEditForm()">&times;</span>
+      <h2>Edit User</h2>
+      <form method="POST" action="/customers/edit" id="editUserForm">
+          <input type="hidden" name="id" id="editUserId">
+          <input type="text" name="fullName" id="editFullName" placeholder="Full Name" required>
+          <input type="email" name="email" id="editEmail" placeholder="Email" required>
+          <input type="text" name="package" id="editPackage" placeholder="Package" required>
+          <input type="text" name="uids" id="editUids" placeholder="UIDs">
+          <input type="text" name="accounts" id="editAccounts" placeholder="Accounts">
+          <input type="text" name="whatsappNumber" id="editWhatsapp" placeholder="WhatsApp Number">
+          <input type="date" name="expiryDate" id="editExpiryDate" placeholder="Expiration Date">
+          <button type="submit">Save Changes</button>
+      </form>
+  </div>
+</div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Package</th>
-                <th>Payment Status</th>
-                <th>Cloud</th>
-                <th>Source</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% customers.forEach(customer => { %>
-                <tr>
-                    <td><%= customer.fullName %></td>
-                    <td><%= customer.email %></td>
-                    <td><%= customer.package %></td>
-                    <td><%= customer.paymentStatus === 'paid' ? '🟢' : '🔴' %></td>
-                    <td>
-                        <form method="POST" action="/customers/toggle-cloud/<%= customer._id %>">
-                            <input type="checkbox" name="cloud" <%= customer.cloud ? 'checked' : '' %> onchange="this.form.submit()">
-                        </form>
-                    </td>
-                    <td><%= customer.source %></td>
-                </tr>
-            <% }) %>
-        </tbody>
-    </table>
 
+
+<!-- Popup Form -->
+<div id="popupForm" class="popup-form-container">
+  <div class="popup-form-content">
+    <span class="close-btn" id="closeFormBtn">&times;</span>
     <h2>Add User Manually</h2>
     <form method="POST" action="/customers/add">
-        <input type="text" name="fullName" placeholder="Full Name" required>
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="text" name="whatsappNumber" placeholder="Whatsapp" required>
-        <input type="text" name="uids" placeholder="UID" required>
-        <input type="text" name="accounts" placeholder="Account" required>
-        <select name="package">
-            <option value="mfc-premium-780">MFC Premium</option>
-            <option value="mfc-standard-420">MFC Standard</option>
-            <!-- Add more package options -->
-        </select>
-        <button type="submit">Add User</button>
-    </form>
+      <input type="text" name="first_name" placeholder="First Name" required>
+      <input type="text" name="last_name" placeholder="Last Name" required>
+      <input type="email" name="user_email" placeholder="Email" required>
+      <input type="tel" name="whatsapp" placeholder="Whatsapp Number" required>
+      <input type="text" name="uid" placeholder="UID" required>
+      <input type="text" name="account" placeholder="Account" required>
+  
+      <!-- Dropdown for packages -->
+      <select name="subscription_plans">
+          <option value="mfc-premium-780">MFC Premium</option>
+          <option value="mfc-standard-420">MFC Standard</option>
+          <option value="mfc-basic-74">MFC Basic</option>
+          <option value="mfc-2-accounts">MFC 2 Accounts</option>
+          <option value="mfc-3-accounts">MFC 3 Accounts</option>
+          <option value="mfc-4-accounts">MFC 4 Accounts</option>
+          <option value="wp-premium-390">WP Premium / 6 Months</option>
+          <option value="wp-standard-195">WP Standard / 3 Months</option>
+          <option value="wp-basic-74">WP Basic / Monthly</option>
+          <option value="wp-devices-1-74">WP Devices - 1 Device / Month</option>
+          <option value="wp-devices-2-140">WP Devices - 2 Devices / Month</option>
+          <option value="wp-devices-3-210">WP Devices - 3 Devices / Month</option>
+          <option value="wp-devices-4-270">WP Devices - 4 Devices / Month</option>
+          <option value="wp-user-1-770">WP User - 1 User / Year</option>
+          <option value="wp-user-2-1300">WP User - 2 Users (Duo) / Year</option>
+          <option value="wp-user-4-2200">WP User - 4 Users (Family Package) / Year</option>
+      </select>
+  
+      <!-- Hidden source field to mark as "manual" -->
+      <input type="hidden" name="source" value="manual">
+  
+      <button type="submit">Add User</button>
+  </form>
+  
+  </div>
+</div>
+
+
+<style>
+/* Existing styles for the pop-up form */
+.popup-form-container {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.4); /* Black background with opacity */
+}
+
+.popup-form-content {
+  margin: 15% auto; /* 15% from the top and centered */
+}
+
+/* Close Button */
+.close-btn {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+
+.popup-form-content button {
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+}
+
+.popup-form-content button:hover {
+  background-color: #45a049;
+}
+
+
+form, .nav-bar-search .gen-button {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adjust gap between elements */
+}
+
+form input[type="text"], form select, form button, .gen-button {
+    display: inline-block;
+}
+
+/* The Modal (background) */
+.modal-form-container {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Modal Content/Box */
+.modal-form-content {
+
+    margin: 10% auto;
+   
+}
+
+/* Close Button */
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-btn:hover, .close-btn:focus {
+    color: black;
+    cursor: pointer;
+}
+
+.table-container {
+    overflow-x: auto;
+    border: 1px solid #ccc;
+    width: 100%;
+}
+
+.table-container table {
+    width: 100%;
+    min-width: 1200px; /* Adjust minimum width to fit content */
+    border-collapse: collapse;
+}
+
+.table-container th, .table-container td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+
+</style>
+
+<script>
+  function openEditForm(id, fullName, email, package, uids, accounts, whatsappNumber, expiryDate) {
+      document.getElementById('editUserId').value = id;
+      document.getElementById('editFullName').value = fullName;
+      document.getElementById('editEmail').value = email;
+      document.getElementById('editPackage').value = package;
+      document.getElementById('editUids').value = uids;
+      document.getElementById('editAccounts').value = accounts;
+      document.getElementById('editWhatsapp').value = whatsappNumber;
+      document.getElementById('editExpiryDate').value = new Date(expiryDate).toISOString().split('T')[0];
+  
+      document.getElementById('editUserModal').style.display = 'block';
+  }
+  
+  function closeEditForm() {
+      document.getElementById('editUserModal').style.display = 'none';
+  }
+  </script>
+  
+
+<script>
+    // Get the modal
+const popupForm = document.getElementById("popupForm");
+
+// Get the button that opens the modal
+const openFormBtn = document.getElementById("openFormBtn");
+
+// Get the element that closes the modal
+const closeFormBtn = document.getElementById("closeFormBtn");
+
+// When the user clicks the button, open the modal 
+openFormBtn.onclick = function() {
+  popupForm.style.display = "block";
+}
+
+// When the user clicks on (x), close the modal
+closeFormBtn.onclick = function() {
+  popupForm.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == popupForm) {
+    popupForm.style.display = "none";
+  }
+}
+
+</script>
+    
 </body>
 </html>
