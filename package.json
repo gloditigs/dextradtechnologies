@@ -23,6 +23,7 @@
     "mongoose": "^8.7.2",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.15",
-    "puppeteer": "^23.8.0"
+    "puppeteer": "^23.8.0",
+    "vercel": "^39.1.2"
   }
 }
