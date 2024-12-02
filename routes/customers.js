@@ -13,6 +13,68 @@ function verifyPayFastSignature(data, passphrase) {
     return crypto.createHash('md5').update(signatureString).digest('hex');
 }
 
+// Scheduled job for updating expiry dates and marking customers as unpaid
+async function handleExpiryUpdates() {
+    const today = new Date();
+
+    try {
+        // Find customers with expired subscriptions
+        const expiredCustomers = await Customer.find({ expiryDate: { $lte: today } });
+
+        expiredCustomers.forEach(async (customer) => {
+            // Mark expired users as unpaid
+            customer.paymentStatus = 'unpaid';
+            customer.isActive = false;
+
+            // Renew expiry date for active packages
+            if (customer.package) {
+                let newExpiryDate = new Date(customer.expiryDate);
+
+                switch (customer.package) {
+                    case 'mfc-premium-780':
+                    case 'wp-user-1-770':
+                    case 'wp-user-2-1300':
+                    case 'wp-user-4-2200':
+                        newExpiryDate.setFullYear(newExpiryDate.getFullYear() + 1); // Add 12 months
+                        break;
+
+                    case 'mfc-standard-420':
+                    case 'wp-premium-390':
+                        newExpiryDate.setMonth(newExpiryDate.getMonth() + 6); // Add 6 months
+                        break;
+
+                    case 'wp-standard-195':
+                        newExpiryDate.setMonth(newExpiryDate.getMonth() + 3); // Add 3 months
+                        break;
+
+                    case 'mfc-basic-74':
+                    case 'mfc-2-accounts':
+                    case 'mfc-3-accounts':
+                    case 'mfc-4-accounts':
+                    case 'wp-basic-74':
+                    case 'wp-devices-1-74':
+                    case 'wp-devices-2-140':
+                    case 'wp-devices-3-210':
+                    case 'wp-devices-4-270':
+                        newExpiryDate.setMonth(newExpiryDate.getMonth() + 1); // Add 1 month
+                        break;
+
+                    default:
+                        console.error(`Unknown package: ${customer.package}`);
+                        return;
+                }
+
+                customer.expiryDate = newExpiryDate;
+                console.log(`Renewed expiry date for ${customer.email} to ${newExpiryDate}`);
+            }
+
+            await customer.save();
+        });
+    } catch (err) {
+        console.error('Error updating expiry dates:', err);
+    }
+}
+
 // Route to add a new customer from the form
 router.post('/add', async (req, res) => {
     try {
