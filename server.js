@@ -50,70 +50,52 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// Scheduled Job for Expiry Date Renewal and Status Update
-cron.schedule('0 0 * * *', async () => {  // Runs every day at midnight
+// Scheduled Job for Expiry Updates and Status Changes
+cron.schedule('0 * * * *', async () => {  // Runs every hour
     try {
-        const today = new Date();
+        const now = new Date();
 
-        // Find all customers whose expiry date has passed
-        const expiringCustomers = await Customer.find({
-            expiryDate: { $lte: today }
-        });
+        // Find expired customers
+        const expiredCustomers = await Customer.find({ expiryDate: { $lte: now } });
 
-        expiringCustomers.forEach(async (customer) => {
-            // Mark users as unpaid if expiry date has passed
-            if (customer.expiryDate <= today) {
+        for (const customer of expiredCustomers) {
+            // Mark as unpaid if expired
+            if (customer.paymentStatus === 'paid') {
                 customer.paymentStatus = 'unpaid';
-                customer.isActive = false;
-                console.log(`Marked ${customer.email} as unpaid and deactivated.`);
+                customer.isActive = false; // Optionally deactivate
+                console.log(`Marked ${customer.email} as unpaid.`);
             }
 
-            // Renew expiry date if user is active
-            if (customer.isActive) {
-                let newExpiryDate = new Date(customer.expiryDate);
+            // Renew expiry date automatically based on package
+            let newExpiryDate = new Date(customer.expiryDate); // Start from old expiry date
+            switch (customer.package) {
+                case 'mfc-premium-780':
+                case 'wp-user-1-770':
+                case 'wp-user-2-1300':
+                case 'wp-user-4-2200':
+                    newExpiryDate.setFullYear(newExpiryDate.getFullYear() + 1); // Add 12 months
+                    break;
 
-                switch (customer.package) {
-                    case 'mfc-premium-780':
-                    case 'wp-user-1-770':
-                    case 'wp-user-2-1300':
-                    case 'wp-user-4-2200':
-                        newExpiryDate.setFullYear(newExpiryDate.getFullYear() + 1); // Add 12 months
-                        break;
+                case 'mfc-standard-420':
+                case 'wp-premium-390':
+                    newExpiryDate.setMonth(newExpiryDate.getMonth() + 6); // Add 6 months
+                    break;
 
-                    case 'mfc-standard-420':
-                    case 'wp-premium-390':
-                        newExpiryDate.setMonth(newExpiryDate.getMonth() + 6); // Add 6 months
-                        break;
+                case 'wp-standard-195':
+                    newExpiryDate.setMonth(newExpiryDate.getMonth() + 3); // Add 3 months
+                    break;
 
-                    case 'wp-standard-195':
-                        newExpiryDate.setMonth(newExpiryDate.getMonth() + 3); // Add 3 months
-                        break;
-
-                    case 'mfc-basic-74':
-                    case 'mfc-2-accounts':
-                    case 'mfc-3-accounts':
-                    case 'mfc-4-accounts':
-                    case 'wp-basic-74':
-                    case 'wp-devices-1-74':
-                    case 'wp-devices-2-140':
-                    case 'wp-devices-3-210':
-                    case 'wp-devices-4-270':
-                        newExpiryDate.setMonth(newExpiryDate.getMonth() + 1); // Add 1 month
-                        break;
-
-                    default:
-                        console.error(`Unknown package: ${customer.package}`);
-                        return;
-                }
-
-                customer.expiryDate = newExpiryDate;
-                console.log(`Renewed expiry date for ${customer.email} to ${newExpiryDate}`);
+                default:
+                    newExpiryDate.setMonth(newExpiryDate.getMonth() + 1); // Add 1 month for basic packages
+                    break;
             }
 
+            customer.expiryDate = newExpiryDate;
             await customer.save();
-        });
+            console.log(`Updated expiry date for ${customer.email} to ${newExpiryDate}.`);
+        }
     } catch (err) {
-        console.error('Error during expiry date handling:', err);
+        console.error('Error processing expiry updates:', err);
     }
 });
 
