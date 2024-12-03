@@ -5,10 +5,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const path = require('path');
-const cron = require('node-cron'); // For scheduling tasks
-const nodemailer = require('nodemailer'); // For sending emails
 const customersRouter = require('./routes/customers');
-const Customer = require('./models/Customer'); // Import Customer model
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -25,7 +22,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
 }));
 
 // MongoDB connection
@@ -40,105 +37,6 @@ app.get('/', (req, res) => {
 
 // Routes
 app.use('/customers', customersRouter);
-
-// Configure Nodemailer for sending emails
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
-
-// Scheduled Job for Expiry Updates and Status Changes
-cron.schedule('0 * * * *', async () => {  // Runs every hour
-    try {
-        const now = new Date();
-
-        // Find expired customers
-        const expiredCustomers = await Customer.find({ expiryDate: { $lte: now } });
-
-        for (const customer of expiredCustomers) {
-            // Mark as unpaid if expired
-            if (customer.paymentStatus === 'paid') {
-                customer.paymentStatus = 'unpaid';
-                customer.isActive = false; // Optionally deactivate
-                console.log(`Marked ${customer.email} as unpaid.`);
-            }
-
-            // Renew expiry date automatically based on package
-            let newExpiryDate = new Date(customer.expiryDate); // Start from old expiry date
-            switch (customer.package) {
-                case 'mfc-premium-780':
-                case 'wp-user-1-770':
-                case 'wp-user-2-1300':
-                case 'wp-user-4-2200':
-                    newExpiryDate.setFullYear(newExpiryDate.getFullYear() + 1); // Add 12 months
-                    break;
-
-                case 'mfc-standard-420':
-                case 'wp-premium-390':
-                    newExpiryDate.setMonth(newExpiryDate.getMonth() + 6); // Add 6 months
-                    break;
-
-                case 'wp-standard-195':
-                    newExpiryDate.setMonth(newExpiryDate.getMonth() + 3); // Add 3 months
-                    break;
-
-                default:
-                    newExpiryDate.setMonth(newExpiryDate.getMonth() + 1); // Add 1 month for basic packages
-                    break;
-            }
-
-            customer.expiryDate = newExpiryDate;
-            await customer.save();
-            console.log(`Updated expiry date for ${customer.email} to ${newExpiryDate}.`);
-        }
-    } catch (err) {
-        console.error('Error processing expiry updates:', err);
-    }
-});
-
-// Scheduled Job for Sending Expiry Reminders
-cron.schedule('0 9 * * *', async () => {  // Runs every day at 9:00 AM server time
-    const today = new Date();
-    const reminderDate = new Date(today);
-    reminderDate.setDate(today.getDate() + 7);
-
-    try {
-        // Find customers whose subscriptions expire in 7 days
-        const expiringCustomers = await Customer.find({
-            expiryDate: { $lte: reminderDate, $gt: today },
-            paymentStatus: 'paid'
-        });
-
-        // Send reminder email to each expiring customer
-        expiringCustomers.forEach(async (customer) => {
-            const mailOptions = {
-                from: process.env.EMAIL_USER,
-                to: customer.email,
-                subject: 'Subscription Renewal Reminder',
-                text: `
-                    Dear ${customer.fullName},
-
-                    Your subscription package "${customer.package}" is due to expire on ${new Date(customer.expiryDate).toLocaleDateString()}.
-
-                    Please ensure to renew your package before it expires to continue enjoying our services. 
-
-                    If you pay for your subscription via EFT, kindly Whatsapp your proof of payment to 074 877 4314.
-
-                    Regards,
-                    Dextrad Technologies Team
-                `
-            };
-
-            await transporter.sendMail(mailOptions);
-            console.log(`Reminder email sent to ${customer.email}`);
-        });
-    } catch (err) {
-        console.error('Error sending reminder emails:', err);
-    }
-});
 
 // Start server
 app.listen(PORT, () => {
