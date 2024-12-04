@@ -1,4 +1,4 @@
-const Customer = require('../../models/Customer');
+const Customer = require('../models/Customer');
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
