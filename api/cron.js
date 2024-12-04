@@ -1,5 +1,5 @@
-import Customer from '../../../models/Customer';
-import nodemailer from 'nodemailer';
+const Customer = require('../../models/Customer');
+const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -9,9 +9,9 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
-        return res.status(405).send('Method Not Allowed');
+        return res.status(405).send('Method is Not Allowed');
     }
 
     try {
@@ -94,4 +94,4 @@ export default async function handler(req, res) {
         console.error('Error in cron job:', err);
         res.status(500).send('Cron job failed.');
     }
-}
+};
