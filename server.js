@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const path = require('path');
 const customersRouter = require('./routes/customers');
+const cronRouter = require('./api/cron');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -37,6 +38,8 @@ app.get('/', (req, res) => {
 
 // Routes
 app.use('/customers', customersRouter);
+
+app.use('/api', cronRouter);
 
 // Start server
 app.listen(PORT, () => {
