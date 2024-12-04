@@ -1,4 +1,4 @@
-import Customer from '../../models/Customer';
+import Customer from '../../../models/Customer';
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
