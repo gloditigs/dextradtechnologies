@@ -9,13 +9,9 @@ module.exports = async function handler(req, res) {
         const now = new Date();
         console.log(`Cron job started at ${now.toISOString()}`);
 
-        // Normalize current time to UTC and add a buffer (e.g., to include customers expiring within the next 5 minutes)
-        const bufferTime = new Date(now.getTime() + 5 * 60 * 1000); // 5 minutes buffer
-        console.log(`Checking for expired customers or near-expired (up to ${bufferTime.toISOString()})`);
-
-        // Query for expired or near-expired customers
-        const expiredCustomers = await Customer.find({ expiryDate: { $lte: bufferTime } });
-        console.log(`Found ${expiredCustomers.length} expired or near-expired customers`);
+        // Handle expiry date updates and mark as unpaid
+        const expiredCustomers = await Customer.find({ expiryDate: { $lte: now } });
+        console.log(`Found ${expiredCustomers.length} expired customers`);
 
         for (const customer of expiredCustomers) {
             // Mark expired customers as unpaid
@@ -49,10 +45,9 @@ module.exports = async function handler(req, res) {
                     break;
             }
 
-            // Update the customer's expiry date
             customer.expiryDate = newExpiryDate;
             await customer.save();
-            console.log(`Updated expiry date for ${customer.email} to ${newExpiryDate.toISOString()}`);
+            console.log(`Updated expiry date for ${customer.email} to ${newExpiryDate}`);
         }
 
         res.status(200).send('Cron job executed successfully.');
