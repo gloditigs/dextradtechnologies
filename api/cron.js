@@ -1,13 +1,4 @@
 const Customer = require('../models/Customer');
-// const nodemailer = require('nodemailer');
-
-// const transporter = nodemailer.createTransport({
-//     service: 'gmail',
-//     auth: {
-//         user: process.env.EMAIL_USER,
-//         pass: process.env.EMAIL_PASS,
-//     },
-// });
 
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -16,9 +7,11 @@ module.exports = async function handler(req, res) {
 
     try {
         const now = new Date();
+        console.log(`Cron job started at ${now.toISOString()}`);
 
         // Handle expiry date updates and mark as unpaid
         const expiredCustomers = await Customer.find({ expiryDate: { $lte: now } });
+        console.log(`Found ${expiredCustomers.length} expired customers`);
 
         for (const customer of expiredCustomers) {
             // Mark expired customers as unpaid
@@ -54,40 +47,8 @@ module.exports = async function handler(req, res) {
 
             customer.expiryDate = newExpiryDate;
             await customer.save();
-            console.log(`Updated expiry date for ${customer.email} to ${newExpiryDate}.`);
+            console.log(`Updated expiry date for ${customer.email} to ${newExpiryDate}`);
         }
-
-        // // Send reminder emails to customers whose subscriptions expire in 7 days
-        // const reminderDate = new Date(now);
-        // reminderDate.setDate(now.getDate() + 7);
-
-        // const expiringSoonCustomers = await Customer.find({
-        //     expiryDate: { $lte: reminderDate, $gt: now },
-        //     paymentStatus: 'paid',
-        // });
-
-        // for (const customer of expiringSoonCustomers) {
-        //     const mailOptions = {
-        //         from: process.env.EMAIL_USER,
-        //         to: customer.email,
-        //         subject: 'Subscription Renewal Reminder',
-        //         text: `
-        //             Dear ${customer.fullName},
-
-        //             Your subscription package "${customer.package}" is due to expire on ${new Date(customer.expiryDate).toLocaleDateString()}.
-
-        //             Please ensure to renew your package before it expires to continue enjoying our services.
-
-        //             If you pay for your subscription via EFT, kindly Whatsapp your proof of payment to 074 877 4314.
-
-        //             Regards,
-        //             Dextrad Technologies Team
-        //         `,
-        //     };
-
-        //     await transporter.sendMail(mailOptions);
-        //     console.log(`Reminder email sent to ${customer.email}`);
-        // }
 
         res.status(200).send('Cron job executed successfully.');
     } catch (err) {
