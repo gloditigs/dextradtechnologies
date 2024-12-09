@@ -2,7 +2,7 @@ const Customer = require('../models/Customer');
 
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
-        return res.status(405).send('Method is Not Allowed');
+        return res.status(405).send('Method Not Allowed');
     }
 
     try {
@@ -14,11 +14,12 @@ module.exports = async function handler(req, res) {
         console.log(`Found ${expiredCustomers.length} expired customers`);
 
         for (const customer of expiredCustomers) {
-            // Mark expired customers as unpaid
+            // Mark expired customers as unpaid and reset checked_by_extension
             if (customer.paymentStatus === 'paid') {
                 customer.paymentStatus = 'unpaid';
-                customer.isActive = false; // Optionally deactivate the user
-                console.log(`Marked ${customer.email} as unpaid.`);
+                customer.isActive = false;
+                customer.checked_by_extension = false; // Reset for reactivation
+                console.log(`Marked ${customer.email} as unpaid and reset checked_by_extension.`);
             }
 
             // Renew expiry date based on package

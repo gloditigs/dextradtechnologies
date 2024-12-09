@@ -11,7 +11,8 @@ const CustomerSchema = new mongoose.Schema({
     expiryDate: { type: Date, required: true },
     paymentStatus: { type: String, default: 'unpaid' },
     cloud: { type: Boolean, default: false }, // Ensure cloud field is here
-    source: { type: String, default: 'website' }
+    source: { type: String, default: 'website' },
+    checked_by_extension: { type: Boolean, default: false }
 });
 
 module.exports = mongoose.model('Customer', CustomerSchema);

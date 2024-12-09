@@ -16,6 +16,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public'))); // Serve static files from the public folder
 
+app.use('/api/cron', require('./api/cron'));
+app.use('/customers', require('./routes/customers'));
+
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 

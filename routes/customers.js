@@ -307,6 +307,39 @@ router.post('/edit', async (req, res) => {
     }
 });
 
+router.get('/pending-activations', async (req, res) => {
+    try {
+        const usersToActivate = await Customer.find({
+            checked_by_extension: false,
+            paymentStatus: 'paid',
+        });
+
+        res.status(200).json(usersToActivate);
+    } catch (err) {
+        console.error('Error fetching pending activations:', err);
+        res.status(500).send('Error fetching users for activation.');
+    }
+});
+
+router.post('/update-activation', async (req, res) => {
+    const { userId } = req.body;
+
+    try {
+        const customer = await Customer.findById(userId);
+
+        if (!customer) {
+            return res.status(404).send('User not found.');
+        }
+
+        customer.checked_by_extension = true; // Mark as activated by extension
+        await customer.save();
+
+        res.status(200).send('User activation status updated.');
+    } catch (err) {
+        console.error('Error updating activation status:', err);
+        res.status(500).send('Failed to update activation status.');
+    }
+});
 
 
 
