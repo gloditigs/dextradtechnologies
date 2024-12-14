@@ -24,6 +24,6 @@
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.15",
     "puppeteer": "^23.8.0",
-    "vercel": "^39.2.2"
+    "vercel": "^32.3.0"
   }
 }
