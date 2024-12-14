@@ -309,6 +309,10 @@ router.post('/edit', async (req, res) => {
 
 router.get('/pending-activations', async (req, res) => {
     try {
+        res.setHeader('Access-Control-Allow-Origin', '*'); // Allow all origins
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST'); // Specify allowed methods
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Allowed headers
+
         const usersToActivate = await Customer.find({
             checked_by_extension: false,
             paymentStatus: 'paid',
@@ -324,22 +328,34 @@ router.get('/pending-activations', async (req, res) => {
 router.post('/update-activation', async (req, res) => {
     const { userId } = req.body;
 
+    // Validate input
+    if (!userId) {
+        return res.status(400).json({ error: 'User ID is required.' });
+    }
+
     try {
+        // Fetch user by ID
         const customer = await Customer.findById(userId);
 
         if (!customer) {
-            return res.status(404).send('User not found.');
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+        // Update activation status
+        if (customer.checked_by_extension) {
+            return res.status(400).json({ error: 'User is already marked as activated.' });
         }
 
         customer.checked_by_extension = true; // Mark as activated by extension
         await customer.save();
 
-        res.status(200).send('User activation status updated.');
+        res.status(200).json({ message: 'User activation status updated successfully.' });
     } catch (err) {
         console.error('Error updating activation status:', err);
-        res.status(500).send('Failed to update activation status.');
+        res.status(500).json({ error: 'Failed to update activation status.' });
     }
 });
+
 
 
 

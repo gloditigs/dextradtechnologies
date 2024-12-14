@@ -7,6 +7,7 @@ const session = require('express-session');
 const path = require('path');
 const customersRouter = require('./routes/customers');
 const cronRouter = require('./api/cron');
+const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -28,6 +29,12 @@ app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+}));
+
+app.use(cors({
+    origin: 'chrome-extension://ekdkclhmmgfoehpdnafepemjkdoniilp', // Allow all origins (for more secure settings, specify the origin)
+    methods: ['GET', 'POST'], // Allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
 }));
 
 // MongoDB connection
