@@ -40,56 +40,64 @@
     <button class="gen-button" id="openFormBtn">Add User</button>
     
     <div class="table-container">
-      <table>
-          <thead>
-              <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Package</th>
-                  <th>UIDs</th>
-                  <th>Accounts</th>
-                  <th>WhatsApp Number</th>
-                  <th>Expiration Date</th>
-                  <th>Payment Status</th>
-                  <th>Cloud</th>
-                  <th>Source</th>
-                  <th>Actions</th>
-              </tr>
-          </thead>
-          <tbody>
-              <% customers.forEach(customer => { %>
-                  <tr>
-                      <td><%= customer.fullName %></td>
-                      <td><%= customer.email %></td>
-                      <td><%= customer.package %></td>
-                      <td><%= customer.uids.join(', ') %></td>
-                      <td><%= customer.accounts.join(', ') %></td>
-                      <td><%= customer.whatsappNumber %></td>
-                      <td><%= new Date(customer.expiryDate).toLocaleDateString() %></td>
-                      <td>
-                          <form method="POST" action="/customers/toggle-payment/<%= customer._id %>">
-                              <input type="checkbox" name="paymentStatus" <%= customer.paymentStatus === 'paid' ? 'checked' : '' %> onchange="this.form.submit()">
-                              <%= customer.paymentStatus === 'paid' ? '🟢 Paid' : '🔴 Unpaid' %>
-                          </form>
-                      </td>
-                      <td>
-                          <form method="POST" action="/customers/toggle-cloud/<%= customer._id %>">
-                              <input type="checkbox" name="cloud" <%= customer.cloud ? 'checked' : '' %> onchange="this.form.submit()">
-                          </form>
-                      </td>
-                      <td><%= customer.source %></td>
-                      <td>
-                          <button type="button" onclick="openEditForm('<%= customer._id %>', '<%= customer.fullName %>', '<%= customer.email %>', '<%= customer.package %>', '<%= customer.uids.join(', ') %>', '<%= customer.accounts.join(', ') %>', '<%= customer.whatsappNumber %>', '<%= customer.expiryDate %>')">
-                              ✏️
-                          </button>
-                          <form method="POST" action="/customers/delete/<%= customer._id %>" onsubmit="return confirm('Are you sure you want to delete this user?');" style="display: inline;">
-                              <button type="submit" style="color: red;">Delete</button>
-                          </form>
-                      </td>
-                  </tr>
-              <% }) %>
-          </tbody>
-      </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Package</th>
+                    <th>UIDs</th>
+                    <th>Accounts</th>
+                    <th>WhatsApp Number</th>
+                    <th>Expiration Date</th>
+                    <th>Payment Status</th>
+                    <th>Cloud</th>
+                    <th>Source</th>
+                    <th>Activation Status</th> <!-- New Column -->
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% customers.forEach(customer => { %>
+                    <tr>
+                        <td><%= customer.fullName %></td>
+                        <td><%= customer.email %></td>
+                        <td><%= customer.package %></td>
+                        <td><%= customer.uids.join(', ') %></td>
+                        <td><%= customer.accounts.join(', ') %></td>
+                        <td><%= customer.whatsappNumber %></td>
+                        <td><%= new Date(customer.expiryDate).toLocaleDateString() %></td>
+                        <td>
+                            <form method="POST" action="/customers/toggle-payment/<%= customer._id %>">
+                                <input type="checkbox" name="paymentStatus" <%= customer.paymentStatus === 'paid' ? 'checked' : '' %> onchange="this.form.submit()">
+                                <%= customer.paymentStatus === 'paid' ? '🟢 Paid' : '🔴 Unpaid' %>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="POST" action="/customers/toggle-cloud/<%= customer._id %>">
+                                <input type="checkbox" name="cloud" <%= customer.cloud ? 'checked' : '' %> onchange="this.form.submit()">
+                            </form>
+                        </td>
+                        <td><%= customer.source %></td>
+                        <td>
+                            <!-- Updated Activation Status Logic -->
+                            <%- customer.checked_by_extension 
+                                ? '<span style="color: green;">🟢 Activated</span>' 
+                                : '<span style="color: red;">🔴 Not Activated</span>' %>
+                        </td>
+                        <td>
+                            <button type="button" onclick="openEditForm('<%= customer._id %>', '<%= customer.fullName %>', '<%= customer.email %>', '<%= customer.package %>', '<%= customer.uids.join(', ') %>', '<%= customer.accounts.join(', ') %>', '<%= customer.whatsappNumber %>', '<%= customer.expiryDate %>')">
+                                ✏️
+                            </button>
+                            <form method="POST" action="/customers/delete/<%= customer._id %>" onsubmit="return confirm('Are you sure you want to delete this user?');" style="display: inline;">
+                                <button type="submit" style="color: red;">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+        
   </div>
   
   

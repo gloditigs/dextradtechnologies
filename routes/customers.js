@@ -326,39 +326,51 @@ router.get('/pending-activations', async (req, res) => {
 });
 
 router.post('/update-activation', async (req, res) => {
-    // Add necessary CORS headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-    // Handle preflight requests
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
-    }
-
-    const { userId } = req.body;
-
-    if (!userId) {
-        return res.status(400).json({ error: 'User ID is required.' });
-    }
-
     try {
-        const customer = await Customer.findById(userId);
+        // Add necessary CORS headers
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
+        // Handle preflight requests
+        if (req.method === 'OPTIONS') {
+            return res.status(200).end();
+        }
+
+        // Log request body for debugging
+        console.log('Request Body:', req.body);
+
+        // Extract and validate userId
+        const userId = req.body.userId?.trim(); // Ensure no leading/trailing whitespace
+        if (!userId || !/^[a-f\d]{24}$/i.test(userId)) {
+            console.error('Invalid or missing User ID:', userId);
+            return res.status(400).json({ error: 'A valid User ID is required.' });
+        }
+
+        // Fetch customer by _id
+        const customer = await Customer.findById(userId);
         if (!customer) {
+            console.error('User not found in database:', userId);
             return res.status(404).json({ error: 'User not found.' });
         }
 
+        // Check activation status
         if (customer.checked_by_extension) {
+            console.log('User already activated:', customer._id);
             return res.status(400).json({ error: 'User is already activated.' });
         }
 
+        // Update activation status
         customer.checked_by_extension = true;
         await customer.save();
 
-        res.status(200).json({ message: 'User activation status updated successfully.' });
+        console.log('User activation updated successfully:', customer._id);
+        res.status(200).json({ 
+            message: 'User activation status updated successfully.', 
+            userId: customer._id 
+        });
     } catch (err) {
-        console.error('Error updating activation status:', err);
+        console.error('Error updating activation status:', err.stack);
         res.status(500).json({ error: 'Failed to update activation status.' });
     }
 });
