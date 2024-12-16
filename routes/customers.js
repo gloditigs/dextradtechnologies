@@ -326,27 +326,26 @@ router.get('/pending-activations', async (req, res) => {
 });
 
 router.post('/update-activation', async (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');  // Allow all origins (replace with your domain for more security)
+
     const { userId } = req.body;
 
-    // Validate input
     if (!userId) {
         return res.status(400).json({ error: 'User ID is required.' });
     }
 
     try {
-        // Fetch user by ID
         const customer = await Customer.findById(userId);
 
         if (!customer) {
             return res.status(404).json({ error: 'User not found.' });
         }
 
-        // Update activation status
         if (customer.checked_by_extension) {
-            return res.status(400).json({ error: 'User is already marked as activated.' });
+            return res.status(400).json({ error: 'User is already activated.' });
         }
 
-        customer.checked_by_extension = true; // Mark as activated by extension
+        customer.checked_by_extension = true;
         await customer.save();
 
         res.status(200).json({ message: 'User activation status updated successfully.' });
@@ -355,6 +354,7 @@ router.post('/update-activation', async (req, res) => {
         res.status(500).json({ error: 'Failed to update activation status.' });
     }
 });
+
 
 
 
