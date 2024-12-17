@@ -249,7 +249,14 @@ router.post('/toggle-payment/:id', async (req, res) => {
         const customer = await Customer.findById(req.params.id);
         if (customer) {
             // Toggle between 'paid' and 'unpaid'
-            customer.paymentStatus = customer.paymentStatus === 'paid' ? 'unpaid' : 'paid';
+            const newPaymentStatus = customer.paymentStatus === 'paid' ? 'unpaid' : 'paid';
+            customer.paymentStatus = newPaymentStatus;
+
+            // Reset `checked_by_extension` if the payment status is set to 'unpaid'
+            if (newPaymentStatus === 'unpaid') {
+                customer.checked_by_extension = false;
+            }
+
             await customer.save();
         }
         res.redirect('/customers'); // Redirect back to customer list
@@ -258,6 +265,7 @@ router.post('/toggle-payment/:id', async (req, res) => {
         res.status(500).send('Error toggling payment status.');
     }
 });
+
 
 // Toggle cloud status
 router.post('/toggle-cloud/:id', async (req, res) => {
