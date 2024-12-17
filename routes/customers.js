@@ -9,10 +9,55 @@ function verifyPayFastSignature(data, passphrase) {
     const sortedKeys = Object.keys(data).sort();
     const signatureString = sortedKeys
         .map((key) => `${key}=${encodeURIComponent(data[key])}`)
-        .join('&') + '&passphrase=' + passphrase;
+        .join('&') + `&passphrase=${passphrase}`;
     return crypto.createHash('md5').update(signatureString).digest('hex');
 }
 
+// PayFast ITN verification endpoint
+router.post('/payfast/itn', async (req, res) => {
+    try {
+        const data = req.body;
+
+        // Log the incoming data for debugging purposes
+        console.log('ITN Data Received:', data);
+
+        // Verify signature
+        const payfastSignature = verifyPayFastSignature(data, process.env.PAYFAST_PASSPHRASE);
+        if (data.signature !== payfastSignature) {
+            console.error('Invalid PayFast signature:', {
+                received: data.signature,
+                calculated: payfastSignature,
+            });
+            return res.status(400).send('Invalid PayFast signature.');
+        }
+
+        // Check if the payment is complete
+        if (data.payment_status === 'COMPLETE') {
+            const email = data.email_address; // Ensure this key matches PayFast's ITN data
+            const customer = await Customer.findOne({ email });
+
+            if (!customer) {
+                console.error('Customer not found for email:', email);
+                return res.status(404).send('Customer not found.');
+            }
+
+            // Update the customer's payment status
+            customer.paymentStatus = 'paid';
+            customer.checked_by_extension = false; // Reset for potential reactivation
+            await customer.save();
+
+            console.log(`Payment marked as successful for customer: ${customer.email}`);
+        } else {
+            console.log(`Payment status not COMPLETE: ${data.payment_status}`);
+        }
+
+        // Respond with 200 status as required by PayFast
+        res.status(200).send('ITN received.');
+    } catch (error) {
+        console.error('Error processing ITN:', error.stack);
+        res.status(500).send('Error processing ITN.');
+    }
+});
 
 // Route to add a new customer from the form
 router.post('/add', async (req, res) => {
@@ -178,30 +223,7 @@ function generatePayFastLink(package) {
     }
 }
 
-// PayFast ITN (Instant Transaction Notification) verification endpoint
-router.post('/payfast/itn', async (req, res) => {
-    try {
-        const data = req.body;
-        const payfastSignature = verifyPayFastSignature(data, process.env.PAYFAST_PASSPHRASE);
-        
-        if (data.signature !== payfastSignature) {
-            return res.status(400).send('Invalid PayFast signature.');
-        }
 
-        if (data.payment_status === 'COMPLETE') {
-            const customer = await Customer.findOne({ email: data.email_address });
-            if (customer) {
-                customer.paymentStatus = 'paid';
-                await customer.save();
-                console.log(`Payment successful for customer: ${customer.email}`);
-            }
-        }
-
-        res.status(200).send('ITN received.');
-    } catch (error) {
-        res.status(500).send('Error processing ITN.');
-    }
-});
 
 // Route to display all customers with filters
 router.get('/', async (req, res) => {
