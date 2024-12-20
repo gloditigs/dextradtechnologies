@@ -405,6 +405,22 @@ router.post('/update-activation', async (req, res) => {
     }
 });
 
+// Toggle activation status
+router.post('/toggle-activation/:id', async (req, res) => {
+    try {
+        const customer = await Customer.findById(req.params.id);
+        if (customer) {
+            // Toggle the activation status
+            customer.checked_by_extension = !customer.checked_by_extension;
+            await customer.save();
+        }
+        res.redirect('/customers'); // Redirect back to customer list
+    } catch (err) {
+        console.error('Error toggling activation status:', err);
+        res.status(500).send('Error toggling activation status.');
+    }
+});
+
 
 
 

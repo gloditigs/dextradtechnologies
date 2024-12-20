@@ -80,11 +80,16 @@
                         </td>
                         <td><%= customer.source %></td>
                         <td>
-                            <!-- Updated Activation Status Logic -->
-                            <%- customer.checked_by_extension 
-                                ? '<span style="color: green;">🟢 Activated</span>' 
-                                : '<span style="color: red;">🔴 Not Activated</span>' %>
+                            <form method="POST" action="/customers/toggle-activation/<%= customer._id %>">
+                                <input type="checkbox" name="checked_by_extension" <%= customer.checked_by_extension ? 'checked' : '' %> onchange="this.form.submit()">
+                                <% if (customer.checked_by_extension) { %>
+                                    <span style="color: green;">🟢 Activated</span>
+                                <% } else { %>
+                                    <span style="color: red;">🔴 Not Activated</span>
+                                <% } %>
+                            </form>
                         </td>
+                        
                         <td>
                             <button type="button" onclick="openEditForm('<%= customer._id %>', '<%= customer.fullName %>', '<%= customer.email %>', '<%= customer.package %>', '<%= customer.uids.join(', ') %>', '<%= customer.accounts.join(', ') %>', '<%= customer.whatsappNumber %>', '<%= customer.expiryDate %>')">
                                 ✏️
@@ -97,6 +102,7 @@
                 <% }) %>
             </tbody>
         </table>
+        
         
   </div>
   

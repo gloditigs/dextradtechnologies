@@ -1,4 +1,5 @@
-/* const mongoose = require('mongoose');
+/*
+const mongoose = require('mongoose');
 const Customer = require('./models/Customer'); // Ensure the path is correct
 require('dotenv').config();
 
