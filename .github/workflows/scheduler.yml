@@ -1,0 +1,12 @@
+name: Run Cron Job
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'  # Runs every 10 minutes
+
+jobs:
+  call-cron-endpoint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call the cron endpoint
+        run: curl -X POST https://www.dextradtechnologies.co.za/api/cron
