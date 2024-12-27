@@ -16,7 +16,7 @@ async function sendExpiryReminder(customer) {
             Please have the funds ready to renew and avoid interruptions.
 
             Regards,
-            Dextrad Technologies Team
+            Dextrad Technologies Team.
         `,
     };
 
