@@ -1,4 +1,32 @@
 const Customer = require('../models/Customer');
+const sgMail = require('@sendgrid/mail');
+require('dotenv').config();
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+async function sendExpiryReminder(customer) {
+    const msg = {
+        to: customer.email,
+        from: 'your_email@yourdomain.com', // Replace with your verified SendGrid sender email
+        subject: 'Subscription Expiry Reminder',
+        text: `
+            Dear ${customer.fullName},
+            
+            Your subscription package "${customer.package}" is expiring on ${new Date(customer.expiryDate).toLocaleDateString()}.
+
+            Please have the funds ready to renew and avoid interruptions.
+
+            Regards,
+            Dextrad Technologies Team.
+        `,
+    };
+
+    try {
+        await sgMail.send(msg);
+        console.log(`Reminder email sent to ${customer.email}`);
+    } catch (error) {
+        console.error('Error sending email:', error.response ? error.response.body : error);
+    }
+}
 
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -7,6 +35,9 @@ module.exports = async function handler(req, res) {
 
     try {
         const now = new Date();
+        const reminderDate = new Date();
+        reminderDate.setDate(now.getDate() + 1); // 1 day before expiry
+
         console.log(`Cron job started at ${now.toISOString()}`);
 
         // Handle expiry date updates and mark as unpaid
@@ -49,6 +80,18 @@ module.exports = async function handler(req, res) {
             customer.expiryDate = newExpiryDate;
             await customer.save();
             console.log(`Updated expiry date for ${customer.email} to ${newExpiryDate}`);
+        }
+
+        // Find customers whose subscriptions expire tomorrow
+        const expiringCustomers = await Customer.find({
+            expiryDate: { $lte: reminderDate, $gt: now },
+            paymentStatus: 'paid',
+        });
+
+        console.log(`Found ${expiringCustomers.length} customers to notify.`);
+
+        for (const customer of expiringCustomers) {
+            await sendExpiryReminder(customer); // Send email
         }
 
         res.status(200).send('Cron job executed successfully.');
